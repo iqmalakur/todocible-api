@@ -27,9 +27,9 @@ func checkTodo(t *testing.T, expected *entity.Todo, actual *entity.Todo) {
 }
 
 func TestCreate(t *testing.T) {
-	success := todoRepository.Create("Coba", "Hello World")
+	todo := todoRepository.Create("Coba", "Hello World")
 
-	if success {
+	if todo != nil {
 		todo := todoRepository.Find(len(todoRepository.Todo) - 1)
 
 		expectedTodo := &entity.Todo{
@@ -80,7 +80,7 @@ func TestUpdate(t *testing.T) {
 	}
 
 	checkTodo(t, expectedTodo, todo)
-	todoRepository.Update(1, entity.Todo{Title: "Hello", Description: "World"})
+	todoRepository.Update(1, &entity.Todo{Title: "Hello", Description: "World"})
 
 	todo = todoRepository.Find(1)
 	expectedTodo = &entity.Todo{

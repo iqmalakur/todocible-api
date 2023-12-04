@@ -6,7 +6,7 @@ type TodoRepository struct {
 	Todo []*entity.Todo
 }
 
-func (todoRepository *TodoRepository) Create(title, description string) bool {
+func (todoRepository *TodoRepository) Create(title, description string) *entity.Todo {
 	todo := &entity.Todo{
 		Id:          len(todoRepository.Todo),
 		Title:       title,
@@ -16,7 +16,7 @@ func (todoRepository *TodoRepository) Create(title, description string) bool {
 
 	todoRepository.Todo = append(todoRepository.Todo, todo)
 
-	return true
+	return todo
 }
 
 func (todoRepository *TodoRepository) FindAll() []*entity.Todo {
@@ -33,17 +33,17 @@ func (todoRepository *TodoRepository) Find(id int) *entity.Todo {
 	return nil
 }
 
-func (todoRepository *TodoRepository) Update(id int, newTodo entity.Todo) bool {
+func (todoRepository *TodoRepository) Update(id int, newTodo *entity.Todo) *entity.Todo {
 	todo := todoRepository.Find(id)
 
 	if todo == nil {
-		return false
+		return nil
 	}
 
 	todo.Title = newTodo.Title
 	todo.Description = newTodo.Description
 
-	return true
+	return todo
 }
 
 func (todoRepository *TodoRepository) SetCompleted(id int, completed bool) bool {
