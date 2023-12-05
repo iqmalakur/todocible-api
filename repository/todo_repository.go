@@ -6,6 +6,10 @@ type TodoRepository struct {
 	Todo []*entity.Todo
 }
 
+func New() *TodoRepository {
+	return &TodoRepository{[]*entity.Todo{}}
+}
+
 func (todoRepository *TodoRepository) Create(title, description string) *entity.Todo {
 	todo := &entity.Todo{
 		Id:          len(todoRepository.Todo),

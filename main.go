@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	todoController := controller.TodoController{}
+	todoController := controller.New()
 
 	http.HandleFunc("/", todoController.Index)
 
