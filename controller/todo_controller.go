@@ -11,8 +11,8 @@ type TodoController struct {
 	service *service.TodoService
 }
 
-func New() *TodoController {
-	return &TodoController{service.New()}
+func NewTodoController() *TodoController {
+	return &TodoController{service.NewTodoService()}
 }
 
 func (todoController *TodoController) Index(w http.ResponseWriter, r *http.Request) {

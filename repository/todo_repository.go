@@ -6,7 +6,7 @@ type TodoRepository struct {
 	Todo []*entity.Todo
 }
 
-func New() *TodoRepository {
+func NewTodoRepository() *TodoRepository {
 	return &TodoRepository{[]*entity.Todo{}}
 }
 

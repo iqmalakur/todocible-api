@@ -9,8 +9,8 @@ type TodoService struct {
 	todoRepository *repository.TodoRepository
 }
 
-func New() *TodoService {
-	return &TodoService{repository.New()}
+func NewTodoService() *TodoService {
+	return &TodoService{repository.NewTodoRepository()}
 }
 
 func (todoService *TodoService) Create(title, description string) *entity.Todo {
