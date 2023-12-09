@@ -1,9 +1,8 @@
 package controller
 
 import (
-	"fmt"
+	"encoding/json"
 	"net/http"
-	"text/template"
 	"todolist/service"
 )
 
@@ -15,36 +14,27 @@ func NewTodoController() *TodoController {
 	return &TodoController{service.NewTodoService()}
 }
 
-func (todoController *TodoController) Index(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case "GET":
-		todoController.show(w, r)
-	case "POST":
-		todoController.create(w, r)
-	}
-
+func (todoController *TodoController) Index(w http.ResponseWriter) {
+	todoService := service.NewTodoService()
+	res := todoService.GetAll()
+	json.NewEncoder(w).Encode(res)
 }
 
-func (todoController *TodoController) show(w http.ResponseWriter, r *http.Request) {
-	t, _ := template.ParseFiles("./view/index.html")
-	t.Execute(w, todoController.service.GetAll())
-}
+// func (todoController *TodoController) create(w http.ResponseWriter, r *http.Request) {
+// 	err := r.ParseForm()
 
-func (todoController *TodoController) create(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
+// 	if err != nil {
+// 		fmt.Println("Error :", err)
+// 	}
 
-	if err != nil {
-		fmt.Println("Error :", err)
-	}
+// 	todo := todoController.service.Create(
+// 		r.FormValue("title"),
+// 		r.FormValue("description"),
+// 	)
 
-	todo := todoController.service.Create(
-		r.FormValue("title"),
-		r.FormValue("description"),
-	)
+// 	if todo == nil {
+// 		fmt.Println("Error : cannot create a new todo")
+// 	}
 
-	if todo == nil {
-		fmt.Println("Error : cannot create a new todo")
-	}
-
-	http.Redirect(w, r, "/", http.StatusFound)
-}
+// 	http.Redirect(w, r, "/", http.StatusFound)
+// }

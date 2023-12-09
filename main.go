@@ -3,14 +3,14 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"todolist/controller"
+	"todolist/router"
 )
 
 func main() {
-	todoController := controller.NewTodoController()
+	http.HandleFunc("/todos/", router.TodoRouter)
 
-	http.HandleFunc("/", todoController.Index)
+	port := "8000"
 
-	fmt.Println("Server run on http://localhost:8000")
-	http.ListenAndServe(":8000", nil)
+	fmt.Println("Server run on http://localhost:" + port)
+	http.ListenAndServe(":"+port, nil)
 }
