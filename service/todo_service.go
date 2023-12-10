@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"strconv"
 	"todolist/dto"
 	"todolist/entity"
 	"todolist/repository"
@@ -33,9 +34,14 @@ func (todoService *TodoService) GetAll() []*entity.Todo {
 	return todos
 }
 
-func (todoService *TodoService) Get(id int) *entity.Todo {
+func (todoService *TodoService) Get(id int) (*entity.Todo, error) {
 	todo := todoService.todoRepository.Find(id)
-	return todo
+
+	if todo == nil {
+		return nil, errors.New("todo with id " + strconv.Itoa(id) + " is not found")
+	}
+
+	return todo, nil
 }
 
 func (todoService *TodoService) Update(id int, newTodo *entity.Todo) *entity.Todo {

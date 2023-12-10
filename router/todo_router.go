@@ -15,5 +15,7 @@ func TodoRouter(w http.ResponseWriter, r *http.Request) {
 		todoController.Index(w, r)
 	case todoId == "" && r.Method == "POST":
 		todoController.Create(w, r)
+	case r.Method == "GET":
+		todoController.Show(w, r)
 	}
 }
