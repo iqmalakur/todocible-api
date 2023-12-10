@@ -62,7 +62,10 @@ func TestUpdate(t *testing.T) {
 
 	todo.Title = "Hello"
 	todo.Description = "Hello World"
-	todoService.Update(0, todo)
+	todoService.Update(0, dto.TodoRequest{
+		Title:       todo.Title,
+		Description: todo.Description,
+	})
 
 	todo, _ = todoService.Get(0)
 	assert.Equal(t, "Hello", todo.Title)

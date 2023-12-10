@@ -44,9 +44,25 @@ func (todoService *TodoService) Get(id int) (*entity.Todo, error) {
 	return todo, nil
 }
 
-func (todoService *TodoService) Update(id int, newTodo *entity.Todo) *entity.Todo {
-	todo := todoService.todoRepository.Update(id, newTodo)
-	return todo
+func (todoService *TodoService) Update(id int, body dto.TodoRequest) (*entity.Todo, error) {
+	if body.Title == "" {
+		return nil, errors.New("'title' is not allowed to be empty")
+	}
+
+	if body.Description == "" {
+		return nil, errors.New("'description' is not allowed to be empty")
+	}
+
+	todo := todoService.todoRepository.Update(id, &entity.Todo{
+		Title:       body.Title,
+		Description: body.Description,
+	})
+
+	if todo == nil {
+		return nil, errors.New("todo with id " + strconv.Itoa(id) + " is not found")
+	}
+
+	return todo, nil
 }
 
 func (todoService *TodoService) SetCompleted(id int, completed bool) bool {
