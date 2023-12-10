@@ -136,10 +136,10 @@ func (todoController *TodoController) Update(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(dto.TodoResponse{
 		Success: true,
-		Message: "success create new todo",
+		Message: "success update todo",
 		Data:    todo,
 	})
 }

@@ -25,6 +25,8 @@ func TodoRouter(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(r.Method, r.URL.Path)
 
+	w.Header().Set("Content-Type", "application/json")
+
 	switch {
 	case todoId == "" && r.Method == "GET":
 		todoController.Index(w, r)
@@ -43,5 +45,7 @@ func TodoRouter(w http.ResponseWriter, r *http.Request) {
 		}
 	case r.Method == "DELETE":
 		todoController.Delete(w, r)
+	default:
+		NotFoundHandler(w, r)
 	}
 }

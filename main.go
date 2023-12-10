@@ -8,6 +8,7 @@ import (
 
 func main() {
 	http.HandleFunc("/todos/", router.TodoRouter)
+	http.HandleFunc("/", router.NotFoundHandler)
 
 	port := "8000"
 
