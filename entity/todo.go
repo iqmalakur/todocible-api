@@ -1,7 +1,8 @@
 package entity
 
 type Todo struct {
-	Id                 int
-	Title, Description string
-	Completed          bool
+	Id          int    `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Completed   bool   `json:"completed"`
 }
