@@ -176,3 +176,44 @@ func (todoController *TodoController) Delete(w http.ResponseWriter, r *http.Requ
 		Data:    todo,
 	})
 }
+
+func (todoController *TodoController) SetDone(w http.ResponseWriter, r *http.Request) {
+	params := strings.Split(r.URL.Path[len("/todos/"):], "/")
+	todoId, err := strconv.Atoi(params[0])
+	action := params[1]
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(dto.TodoResponse{
+			Success: false,
+			Message: "todo id must be of type number",
+			Data:    nil,
+		})
+		return
+	}
+
+	status := false
+
+	if action == "done" {
+		status = true
+	}
+
+	todo, err := todoController.service.SetCompleted(todoId, status)
+
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(dto.TodoResponse{
+			Success: false,
+			Message: err.Error(),
+			Data:    nil,
+		})
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(dto.TodoResponse{
+		Success: true,
+		Message: "success set " + action + " todo",
+		Data:    todo,
+	})
+}

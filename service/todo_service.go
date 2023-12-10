@@ -65,8 +65,20 @@ func (todoService *TodoService) Update(id int, body dto.TodoRequest) (*entity.To
 	return todo, nil
 }
 
-func (todoService *TodoService) SetCompleted(id int, completed bool) bool {
-	return todoService.todoRepository.SetCompleted(id, completed)
+func (todoService *TodoService) SetCompleted(id int, completed bool) (*entity.Todo, error) {
+	todo := todoService.todoRepository.Find(id)
+
+	if todo == nil {
+		return nil, errors.New("todo with id " + strconv.Itoa(id) + " is not found")
+	}
+
+	success := todoService.todoRepository.SetCompleted(id, completed)
+
+	if !success {
+		return nil, errors.New("todo with id " + strconv.Itoa(id) + " is not found")
+	}
+
+	return todo, nil
 }
 
 func (todoService *TodoService) Delete(id int) (*entity.Todo, error) {
