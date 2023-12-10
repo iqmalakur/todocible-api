@@ -1,6 +1,8 @@
 package service
 
 import (
+	"errors"
+	"todolist/dto"
 	"todolist/entity"
 	"todolist/repository"
 )
@@ -13,9 +15,17 @@ func NewTodoService() *TodoService {
 	return &TodoService{repository.NewTodoRepository()}
 }
 
-func (todoService *TodoService) Create(title, description string) *entity.Todo {
-	todo := todoService.todoRepository.Create(title, description)
-	return todo
+func (todoService *TodoService) Create(todo dto.TodoRequest) (*entity.Todo, error) {
+	if todo.Title == "" {
+		return nil, errors.New("'title' is not allowed to be empty")
+	}
+
+	if todo.Description == "" {
+		return nil, errors.New("'description' is not allowed to be empty")
+	}
+
+	newTodo := todoService.todoRepository.Create(todo.Title, todo.Description)
+	return newTodo, nil
 }
 
 func (todoService *TodoService) GetAll() []*entity.Todo {

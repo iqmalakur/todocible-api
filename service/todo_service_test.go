@@ -2,6 +2,7 @@ package service
 
 import (
 	"testing"
+	"todolist/dto"
 	"todolist/repository"
 
 	"github.com/stretchr/testify/assert"
@@ -10,15 +11,27 @@ import (
 var todoService = TodoService{&repository.TodoRepository{}}
 
 func TestMain(m *testing.M) {
-	todoService.Create("Todo 1", "Todolist 1")
-	todoService.Create("Todo 2", "Todolist 2")
-	todoService.Create("Todo 3", "Todolist 3")
+	todoService.Create(dto.TodoRequest{
+		Title:       "Todo 1",
+		Description: "Todolist 1",
+	})
+	todoService.Create(dto.TodoRequest{
+		Title:       "Todo 2",
+		Description: "Todolist 2",
+	})
+	todoService.Create(dto.TodoRequest{
+		Title:       "Todo 3",
+		Description: "Todolist 3",
+	})
 
 	m.Run()
 }
 
 func TestCreate(t *testing.T) {
-	todo := todoService.Create("Coba", "Hello World")
+	todo, _ := todoService.Create(dto.TodoRequest{
+		Title:       "Coba",
+		Description: "Hello World",
+	})
 
 	assert.Equal(t, "Coba", todo.Title)
 	assert.Equal(t, "Hello World", todo.Description)
