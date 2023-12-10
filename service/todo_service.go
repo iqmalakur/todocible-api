@@ -53,6 +53,18 @@ func (todoService *TodoService) SetCompleted(id int, completed bool) bool {
 	return todoService.todoRepository.SetCompleted(id, completed)
 }
 
-func (todoService *TodoService) Delete(id int) bool {
-	return todoService.todoRepository.Delete(id)
+func (todoService *TodoService) Delete(id int) (*entity.Todo, error) {
+	todo := todoService.todoRepository.Find(id)
+
+	if todo == nil {
+		return nil, errors.New("todo with id " + strconv.Itoa(id) + " is not found")
+	}
+
+	success := todoService.todoRepository.Delete(id)
+
+	if !success {
+		return nil, errors.New("todo with id " + strconv.Itoa(id) + " is not found")
+	}
+
+	return todo, nil
 }

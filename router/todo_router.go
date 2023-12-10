@@ -17,5 +17,7 @@ func TodoRouter(w http.ResponseWriter, r *http.Request) {
 		todoController.Create(w, r)
 	case r.Method == "GET":
 		todoController.Show(w, r)
+	case r.Method == "DELETE":
+		todoController.Delete(w, r)
 	}
 }

@@ -91,3 +91,36 @@ func (todoController *TodoController) Show(w http.ResponseWriter, r *http.Reques
 		Data:    todo,
 	})
 }
+
+func (todoController *TodoController) Delete(w http.ResponseWriter, r *http.Request) {
+	todoId, err := strconv.Atoi(r.URL.Path[len("/todos/"):])
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(dto.TodoResponse{
+			Success: false,
+			Message: "todo id must be of type number",
+			Data:    nil,
+		})
+		return
+	}
+
+	todo, err := todoController.service.Delete(todoId)
+
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(dto.TodoResponse{
+			Success: false,
+			Message: err.Error(),
+			Data:    nil,
+		})
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(dto.TodoResponse{
+		Success: true,
+		Message: "success delete todo",
+		Data:    todo,
+	})
+}
