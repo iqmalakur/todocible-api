@@ -25,7 +25,7 @@ func TodoRouter(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(r.Method, r.URL.Path)
 
-	w.Header().Set("Content-Type", "application/json")
+	HeaderConfig(w)
 
 	switch {
 	case todoId == "" && r.Method == "GET":

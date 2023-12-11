@@ -6,8 +6,14 @@ import (
 	"todolist/dto"
 )
 
-func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
+func HeaderConfig(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+}
+
+func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
+	HeaderConfig(w)
+
 	w.WriteHeader(http.StatusNotFound)
 	json.NewEncoder(w).Encode(dto.TodoResponse{
 		Success: false,
