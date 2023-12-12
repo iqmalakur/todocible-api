@@ -4,7 +4,23 @@ This is the REST API for the ToDocible application.
 
 ToDocible is a simple application for todolist management.
 
-## Install
+<details>
+<summary>Table of Contents</summary>
+
+- [Installation](#installation)
+- [Run the app](#run-the-app)
+- [REST API](#rest-api)
+  - [Get list of Todo](#get-list-of-todo)
+  - [Get a specific Todo by id](#get-a-specific-todo-by-id)
+  - [Create new Todo](#create-new-todo)
+  - [Change a Todo](#change-a-todo)
+  - [Delete a Todo](#delete-a-todo)
+  - [Change a Todo's completed to done](#change-a-todos-completed-to-done)
+  - [Change a Todo's completed to undone](#change-a-todos-completed-to-undone)
+
+</details>
+
+## Installation
 
 You can install this project locally by cloning this github repository using the command below.
 
@@ -26,15 +42,15 @@ go build -o todolist.exe
 todolist
 ```
 
-# REST API
+## REST API
 
-## Get list of Todo
+### Get list of Todo
 
-### Request
+#### Request
 
 `GET /todos/`
 
-### Response
+#### Response
 
 Example Response
 
@@ -59,9 +75,9 @@ Example Response
 }
 ```
 
-## Get a specific Todo by id
+### Get a specific Todo by id
 
-### Request
+#### Request
 
 `GET /todos/{id}`
 
@@ -69,7 +85,7 @@ Example Request
 
 `GET /todos/1`
 
-### Response
+#### Response
 
 Example Response
 
@@ -86,13 +102,13 @@ Example Response
 }
 ```
 
-## Create new Todo
+### Create new Todo
 
-### Request
+#### Request
 
 `POST /todos/`
 
-#### Request Body
+##### Request Body
 
 Example Request Body
 
@@ -103,7 +119,7 @@ Example Request Body
 }
 ```
 
-### Response
+#### Response
 
 Example Response
 
@@ -120,9 +136,9 @@ Example Response
 }
 ```
 
-## Change a todo
+### Change a Todo
 
-### Request
+#### Request
 
 `PUT /todos/{id}`
 
@@ -130,7 +146,7 @@ Example Request
 
 `PUT /todos/1`
 
-#### Request Body
+##### Request Body
 
 Example Request Body
 
@@ -141,7 +157,7 @@ Example Request Body
 }
 ```
 
-### Response
+#### Response
 
 Example Response
 
@@ -158,9 +174,9 @@ Example Response
 }
 ```
 
-## Delete a Todo
+### Delete a Todo
 
-### Request
+#### Request
 
 `DELETE /todos/{id}`
 
@@ -168,7 +184,7 @@ Example Request
 
 `DELETE /todos/1`
 
-### Response
+#### Response
 
 Example Response
 
@@ -185,9 +201,9 @@ Example Response
 }
 ```
 
-## Change a Todo's completed to done
+### Change a Todo's completed to done
 
-### Request
+#### Request
 
 `PUT /todos/{id}`
 
@@ -195,7 +211,7 @@ Example Request
 
 `PUT /todos/1/done`
 
-### Response
+#### Response
 
 Example Response
 
@@ -212,9 +228,9 @@ Example Response
 }
 ```
 
-## Change a Todo's completed to undone
+### Change a Todo's completed to undone
 
-### Request
+#### Request
 
 `PUT /todos/{id}`
 
@@ -222,7 +238,7 @@ Example Request
 
 `PUT /todos/1/undone`
 
-### Response
+#### Response
 
 Example Response
 
