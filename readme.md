@@ -1,13 +1,15 @@
-# Todolist REST API
+# ToDocible REST API
 
-This is a REST API application for managing todos.
+This is the REST API for the ToDocible application.
+
+ToDocible is a simple application for todolist management.
 
 ## Install
 
 You can install this project locally by cloning this github repository using the command below.
 
 ```bash
-git clone https://github.com/iqmalakur/todolist-api.git
+git clone https://github.com/iqmalakur/todocible-api.git
 ```
 
 ## Run the app
