@@ -205,7 +205,7 @@ Example Response
 
 #### Request
 
-`PUT /todos/{id}`
+`PUT /todos/{id}/done`
 
 Example Request
 
@@ -232,7 +232,7 @@ Example Response
 
 #### Request
 
-`PUT /todos/{id}`
+`PUT /todos/{id}/undone`
 
 Example Request
 
