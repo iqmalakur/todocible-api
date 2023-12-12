@@ -31,15 +31,15 @@ git clone https://github.com/iqmalakur/todocible-api.git
 ## Run the app
 
 ```bash
-go build -o todolist
-./todolist
+go build -o ToDocible
+./ToDocible
 ```
 
 If you are a Windows user, you can use the command below
 
 ```bash
-go build -o todolist.exe
-todolist
+go build -o ToDocible.exe
+ToDocible
 ```
 
 ## REST API
