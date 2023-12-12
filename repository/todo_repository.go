@@ -3,22 +3,24 @@ package repository
 import "todolist/entity"
 
 type TodoRepository struct {
-	Todo []*entity.Todo
+	Todo    []*entity.Todo
+	counter int
 }
 
 func NewTodoRepository() *TodoRepository {
-	return &TodoRepository{[]*entity.Todo{}}
+	return &TodoRepository{Todo: []*entity.Todo{}, counter: 0}
 }
 
 func (todoRepository *TodoRepository) Create(title, description string) *entity.Todo {
 	todo := &entity.Todo{
-		Id:          len(todoRepository.Todo),
+		Id:          todoRepository.counter,
 		Title:       title,
 		Description: description,
 		Completed:   false,
 	}
 
 	todoRepository.Todo = append(todoRepository.Todo, todo)
+	todoRepository.counter++
 
 	return todo
 }
