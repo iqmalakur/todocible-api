@@ -60,13 +60,13 @@ Example Response
   "message": "success get all todos",
   "data": [
     {
-      "id": 0,
+      "id": "e883ab98-865d-4e6d-beb4-bf022ed77f05",
       "title": "Lorem",
       "description": "Lorem Ipsum Dolor Sit Amet.",
       "completed": false
     },
     {
-      "id": 1,
+      "id": "45f49812-f8c7-4c2b-8789-8848632d4fac",
       "title": "Consectetur",
       "description": "Sed consectetur accumsan metus.",
       "completed": true
@@ -83,7 +83,7 @@ Example Response
 
 Example Request
 
-`GET /todos/1`
+`GET /todos/45f49812-f8c7-4c2b-8789-8848632d4fac`
 
 #### Response
 
@@ -94,7 +94,7 @@ Example Response
   "success": true,
   "message": "success get todo",
   "data": {
-    "id": 1,
+    "id": "45f49812-f8c7-4c2b-8789-8848632d4fac",
     "title": "Consectetur",
     "description": "Sed consectetur accumsan metus.",
     "completed": true
@@ -128,7 +128,7 @@ Example Response
   "success": true,
   "message": "success create new todo",
   "data": {
-    "id": 0,
+    "id": "e883ab98-865d-4e6d-beb4-bf022ed77f05",
     "title": "Lorem",
     "description": "Lorem Ipsum Dolor Sit Amet.",
     "completed": false
@@ -144,7 +144,7 @@ Example Response
 
 Example Request
 
-`PUT /todos/1`
+`PUT /todos/45f49812-f8c7-4c2b-8789-8848632d4fac`
 
 ##### Request Body
 
@@ -166,7 +166,7 @@ Example Response
   "success": true,
   "message": "success update todo",
   "data": {
-    "id": 1,
+    "id": "45f49812-f8c7-4c2b-8789-8848632d4fac",
     "title": "Accumsan",
     "description": "Sed consectetur accumsan metus.",
     "completed": true
@@ -182,7 +182,7 @@ Example Response
 
 Example Request
 
-`DELETE /todos/1`
+`DELETE /todos/45f49812-f8c7-4c2b-8789-8848632d4fac`
 
 #### Response
 
@@ -193,7 +193,7 @@ Example Response
   "success": true,
   "message": "success delete todo",
   "data": {
-    "id": 1,
+    "id": "45f49812-f8c7-4c2b-8789-8848632d4fac",
     "title": "Consectetur",
     "description": "Sed consectetur accumsan metus.",
     "completed": true
@@ -209,7 +209,7 @@ Example Response
 
 Example Request
 
-`PUT /todos/1/done`
+`PUT /todos/45f49812-f8c7-4c2b-8789-8848632d4fac/done`
 
 #### Response
 
@@ -220,7 +220,7 @@ Example Response
   "success": true,
   "message": "success set done todo",
   "data": {
-    "id": 1,
+    "id": "45f49812-f8c7-4c2b-8789-8848632d4fac",
     "title": "Consectetur",
     "description": "Sed consectetur accumsan metus.",
     "completed": true
@@ -236,7 +236,7 @@ Example Response
 
 Example Request
 
-`PUT /todos/1/undone`
+`PUT /todos/45f49812-f8c7-4c2b-8789-8848632d4fac/undone`
 
 #### Response
 
@@ -247,7 +247,7 @@ Example Response
   "success": true,
   "message": "success set undone todo",
   "data": {
-    "id": 1,
+    "id": "45f49812-f8c7-4c2b-8789-8848632d4fac",
     "title": "Consectetur",
     "description": "Sed consectetur accumsan metus.",
     "completed": false
