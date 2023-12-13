@@ -1,26 +1,28 @@
 package repository
 
-import "todolist/entity"
+import (
+	"todolist/entity"
+
+	"github.com/google/uuid"
+)
 
 type TodoRepository struct {
-	Todo    []*entity.Todo
-	counter int
+	Todo []*entity.Todo
 }
 
 func NewTodoRepository() *TodoRepository {
-	return &TodoRepository{Todo: []*entity.Todo{}, counter: 0}
+	return &TodoRepository{[]*entity.Todo{}}
 }
 
 func (todoRepository *TodoRepository) Create(title, description string) *entity.Todo {
 	todo := &entity.Todo{
-		Id:          todoRepository.counter,
+		Id:          uuid.New().String(),
 		Title:       title,
 		Description: description,
 		Completed:   false,
 	}
 
 	todoRepository.Todo = append(todoRepository.Todo, todo)
-	todoRepository.counter++
 
 	return todo
 }
@@ -29,7 +31,7 @@ func (todoRepository *TodoRepository) FindAll() []*entity.Todo {
 	return todoRepository.Todo
 }
 
-func (todoRepository *TodoRepository) Find(id int) *entity.Todo {
+func (todoRepository *TodoRepository) Find(id string) *entity.Todo {
 	for _, todo := range todoRepository.Todo {
 		if todo.Id == id {
 			return todo
@@ -39,7 +41,7 @@ func (todoRepository *TodoRepository) Find(id int) *entity.Todo {
 	return nil
 }
 
-func (todoRepository *TodoRepository) Update(id int, newTodo *entity.Todo) *entity.Todo {
+func (todoRepository *TodoRepository) Update(id string, newTodo *entity.Todo) *entity.Todo {
 	todo := todoRepository.Find(id)
 
 	if todo == nil {
@@ -52,7 +54,7 @@ func (todoRepository *TodoRepository) Update(id int, newTodo *entity.Todo) *enti
 	return todo
 }
 
-func (todoRepository *TodoRepository) SetCompleted(id int, completed bool) bool {
+func (todoRepository *TodoRepository) SetCompleted(id string, completed bool) bool {
 	todo := todoRepository.Find(id)
 
 	if todo == nil {
@@ -64,7 +66,7 @@ func (todoRepository *TodoRepository) SetCompleted(id int, completed bool) bool 
 	return true
 }
 
-func (todoRepository *TodoRepository) Delete(id int) bool {
+func (todoRepository *TodoRepository) Delete(id string) bool {
 	index := -1
 
 	for i, todo := range todoRepository.Todo {

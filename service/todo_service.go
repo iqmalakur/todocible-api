@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"strconv"
 	"todolist/dto"
 	"todolist/entity"
 	"todolist/repository"
@@ -34,17 +33,17 @@ func (todoService *TodoService) GetAll() []*entity.Todo {
 	return todos
 }
 
-func (todoService *TodoService) Get(id int) (*entity.Todo, error) {
+func (todoService *TodoService) Get(id string) (*entity.Todo, error) {
 	todo := todoService.todoRepository.Find(id)
 
 	if todo == nil {
-		return nil, errors.New("todo with id " + strconv.Itoa(id) + " is not found")
+		return nil, errors.New("todo with id " + id + " is not found")
 	}
 
 	return todo, nil
 }
 
-func (todoService *TodoService) Update(id int, body dto.TodoRequest) (*entity.Todo, error) {
+func (todoService *TodoService) Update(id string, body dto.TodoRequest) (*entity.Todo, error) {
 	if body.Title == "" {
 		return nil, errors.New("'title' is not allowed to be empty")
 	}
@@ -59,39 +58,39 @@ func (todoService *TodoService) Update(id int, body dto.TodoRequest) (*entity.To
 	})
 
 	if todo == nil {
-		return nil, errors.New("todo with id " + strconv.Itoa(id) + " is not found")
+		return nil, errors.New("todo with id " + id + " is not found")
 	}
 
 	return todo, nil
 }
 
-func (todoService *TodoService) SetCompleted(id int, completed bool) (*entity.Todo, error) {
+func (todoService *TodoService) SetCompleted(id string, completed bool) (*entity.Todo, error) {
 	todo := todoService.todoRepository.Find(id)
 
 	if todo == nil {
-		return nil, errors.New("todo with id " + strconv.Itoa(id) + " is not found")
+		return nil, errors.New("todo with id " + id + " is not found")
 	}
 
 	success := todoService.todoRepository.SetCompleted(id, completed)
 
 	if !success {
-		return nil, errors.New("todo with id " + strconv.Itoa(id) + " is not found")
+		return nil, errors.New("todo with id " + id + " is not found")
 	}
 
 	return todo, nil
 }
 
-func (todoService *TodoService) Delete(id int) (*entity.Todo, error) {
+func (todoService *TodoService) Delete(id string) (*entity.Todo, error) {
 	todo := todoService.todoRepository.Find(id)
 
 	if todo == nil {
-		return nil, errors.New("todo with id " + strconv.Itoa(id) + " is not found")
+		return nil, errors.New("todo with id " + id + " is not found")
 	}
 
 	success := todoService.todoRepository.Delete(id)
 
 	if !success {
-		return nil, errors.New("todo with id " + strconv.Itoa(id) + " is not found")
+		return nil, errors.New("todo with id " + id + " is not found")
 	}
 
 	return todo, nil

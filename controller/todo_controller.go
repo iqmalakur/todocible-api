@@ -3,7 +3,6 @@ package controller
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
 	"strings"
 	"todolist/dto"
 	"todolist/service"
@@ -61,17 +60,7 @@ func (todoController *TodoController) Create(w http.ResponseWriter, r *http.Requ
 }
 
 func (todoController *TodoController) Show(w http.ResponseWriter, r *http.Request) {
-	todoId, err := strconv.Atoi(r.URL.Path[len("/todos/"):])
-
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(dto.TodoResponse{
-			Success: false,
-			Message: "todo id must be of type number",
-			Data:    nil,
-		})
-		return
-	}
+	todoId := r.URL.Path[len("/todos/"):]
 
 	todo, err := todoController.service.Get(todoId)
 
@@ -94,20 +83,10 @@ func (todoController *TodoController) Show(w http.ResponseWriter, r *http.Reques
 }
 
 func (todoController *TodoController) Update(w http.ResponseWriter, r *http.Request) {
-	todoId, err := strconv.Atoi(r.URL.Path[len("/todos/"):])
-
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(dto.TodoResponse{
-			Success: false,
-			Message: "todo id must be of type number",
-			Data:    nil,
-		})
-		return
-	}
+	todoId := r.URL.Path[len("/todos/"):]
 
 	var body dto.TodoRequest
-	err = json.NewDecoder(r.Body).Decode(&body)
+	err := json.NewDecoder(r.Body).Decode(&body)
 
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -145,18 +124,7 @@ func (todoController *TodoController) Update(w http.ResponseWriter, r *http.Requ
 }
 
 func (todoController *TodoController) Delete(w http.ResponseWriter, r *http.Request) {
-	todoId, err := strconv.Atoi(r.URL.Path[len("/todos/"):])
-
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(dto.TodoResponse{
-			Success: false,
-			Message: "todo id must be of type number",
-			Data:    nil,
-		})
-		return
-	}
-
+	todoId := r.URL.Path[len("/todos/"):]
 	todo, err := todoController.service.Delete(todoId)
 
 	if err != nil {
@@ -179,18 +147,8 @@ func (todoController *TodoController) Delete(w http.ResponseWriter, r *http.Requ
 
 func (todoController *TodoController) SetDone(w http.ResponseWriter, r *http.Request) {
 	params := strings.Split(r.URL.Path[len("/todos/"):], "/")
-	todoId, err := strconv.Atoi(params[0])
+	todoId := params[0]
 	action := params[1]
-
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(dto.TodoResponse{
-			Success: false,
-			Message: "todo id must be of type number",
-			Data:    nil,
-		})
-		return
-	}
 
 	status := false
 

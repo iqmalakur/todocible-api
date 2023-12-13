@@ -20,7 +20,6 @@ func TestMain(m *testing.M) {
 }
 
 func checkTodo(t *testing.T, expected *entity.Todo, actual *entity.Todo) {
-	assert.Equal(t, expected.Id, actual.Id)
 	assert.Equal(t, expected.Title, actual.Title)
 	assert.Equal(t, expected.Description, actual.Description)
 	assert.Equal(t, expected.Completed, actual.Completed)
@@ -30,10 +29,7 @@ func TestCreate(t *testing.T) {
 	todo := todoRepository.Create("Coba", "Hello World")
 
 	if todo != nil {
-		todo := todoRepository.Find(len(todoRepository.Todo) - 1)
-
 		expectedTodo := &entity.Todo{
-			Id:          len(todoRepository.Todo) - 1,
 			Title:       "Coba",
 			Description: "Hello World",
 			Completed:   false,
@@ -47,7 +43,6 @@ func TestFindAll(t *testing.T) {
 	todos := todoRepository.FindAll()
 
 	expectedTodo := &entity.Todo{
-		Id:          0,
 		Title:       "Todo 1",
 		Description: "Todolist 1",
 		Completed:   false,
@@ -58,10 +53,10 @@ func TestFindAll(t *testing.T) {
 }
 
 func TestFind(t *testing.T) {
-	todo := todoRepository.Find(1)
+	todos := todoRepository.FindAll()
+	todo := todoRepository.Find(todos[1].Id)
 
 	expectedTodo := &entity.Todo{
-		Id:          1,
 		Title:       "Todo 2",
 		Description: "Todolist 2",
 		Completed:   false,
@@ -71,20 +66,19 @@ func TestFind(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	todo := todoRepository.Find(1)
+	todos := todoRepository.FindAll()
+	todo := todoRepository.Find(todos[1].Id)
 	expectedTodo := &entity.Todo{
-		Id:          1,
 		Title:       "Todo 2",
 		Description: "Todolist 2",
 		Completed:   false,
 	}
 
 	checkTodo(t, expectedTodo, todo)
-	todoRepository.Update(1, &entity.Todo{Title: "Hello", Description: "World"})
+	todoRepository.Update(todo.Id, &entity.Todo{Title: "Hello", Description: "World"})
 
-	todo = todoRepository.Find(1)
+	todo = todoRepository.Find(todos[1].Id)
 	expectedTodo = &entity.Todo{
-		Id:          1,
 		Title:       "Hello",
 		Description: "World",
 		Completed:   false,
@@ -93,20 +87,19 @@ func TestUpdate(t *testing.T) {
 }
 
 func TestCompleted(t *testing.T) {
-	todo := todoRepository.Find(0)
+	todos := todoRepository.FindAll()
+	todo := todoRepository.Find(todos[0].Id)
 	expectedTodo := &entity.Todo{
-		Id:          0,
 		Title:       "Todo 1",
 		Description: "Todolist 1",
 		Completed:   false,
 	}
 
 	checkTodo(t, expectedTodo, todo)
-	todoRepository.SetCompleted(0, true)
+	todoRepository.SetCompleted(todo.Id, true)
 
-	todo = todoRepository.Find(0)
+	todo = todoRepository.Find(todos[0].Id)
 	expectedTodo = &entity.Todo{
-		Id:          0,
 		Title:       "Todo 1",
 		Description: "Todolist 1",
 		Completed:   true,
@@ -115,11 +108,12 @@ func TestCompleted(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	todo := todoRepository.Find(0)
+	todos := todoRepository.FindAll()
+	todo := todoRepository.Find(todos[0].Id)
 	assert.NotNil(t, todo)
 
-	todoRepository.Delete(0)
+	todoRepository.Delete(todo.Id)
 
-	todo = todoRepository.Find(0)
+	todo = todoRepository.Find(todo.Id)
 	assert.Nil(t, todo)
 }

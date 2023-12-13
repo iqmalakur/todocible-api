@@ -34,7 +34,7 @@ func TodoRouter(w http.ResponseWriter, r *http.Request) {
 		todoController.Create(w, r)
 	case r.Method == "GET":
 		todoController.Show(w, r)
-	case r.Method == "PUT":
+	case todoId != "" && r.Method == "PUT":
 		switch action {
 		case "done":
 			fallthrough
@@ -43,7 +43,7 @@ func TodoRouter(w http.ResponseWriter, r *http.Request) {
 		default:
 			todoController.Update(w, r)
 		}
-	case r.Method == "DELETE":
+	case todoId != "" && r.Method == "DELETE":
 		todoController.Delete(w, r)
 	default:
 		NotFoundHandler(w, r)

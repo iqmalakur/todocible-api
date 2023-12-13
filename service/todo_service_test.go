@@ -47,7 +47,8 @@ func TestGetAll(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	todo, _ := todoService.Get(0)
+	todos := todoService.GetAll()
+	todo, _ := todoService.Get(todos[0].Id)
 
 	assert.Equal(t, "Todo 1", todo.Title)
 	assert.Equal(t, "Todolist 1", todo.Description)
@@ -55,40 +56,43 @@ func TestGet(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	todo, _ := todoService.Get(0)
+	todos := todoService.GetAll()
+	todo, _ := todoService.Get(todos[0].Id)
 	assert.Equal(t, "Todo 1", todo.Title)
 	assert.Equal(t, "Todolist 1", todo.Description)
 	assert.Equal(t, false, todo.Completed)
 
 	todo.Title = "Hello"
 	todo.Description = "Hello World"
-	todoService.Update(0, dto.TodoRequest{
+	todoService.Update(todo.Id, dto.TodoRequest{
 		Title:       todo.Title,
 		Description: todo.Description,
 	})
 
-	todo, _ = todoService.Get(0)
+	todo, _ = todoService.Get(todo.Id)
 	assert.Equal(t, "Hello", todo.Title)
 	assert.Equal(t, "Hello World", todo.Description)
 	assert.Equal(t, false, todo.Completed)
 }
 
 func TestCompleted(t *testing.T) {
-	todo, _ := todoService.Get(0)
+	todos := todoService.GetAll()
+	todo, _ := todoService.Get(todos[0].Id)
 	assert.Equal(t, false, todo.Completed)
 
-	todoService.SetCompleted(0, true)
+	todoService.SetCompleted(todo.Id, true)
 
-	todo, _ = todoService.Get(0)
+	todo, _ = todoService.Get(todo.Id)
 	assert.Equal(t, true, todo.Completed)
 }
 
 func TestDelete(t *testing.T) {
-	todo, _ := todoService.Get(0)
+	todos := todoService.GetAll()
+	todo, _ := todoService.Get(todos[0].Id)
 	assert.NotNil(t, todo)
 
-	todoService.Delete(0)
+	todoService.Delete(todo.Id)
 
-	todo, _ = todoService.Get(0)
+	todo, _ = todoService.Get(todo.Id)
 	assert.Nil(t, todo)
 }
