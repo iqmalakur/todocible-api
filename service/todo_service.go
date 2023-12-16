@@ -48,10 +48,7 @@ func (todoService *TodoService) Update(id string, body dto.TodoRequest) (*entity
 		return nil, errors.New("'description' is not allowed to be empty")
 	}
 
-	todo := todoService.todoRepository.Update(id, &entity.Todo{
-		Title:       body.Title,
-		Description: body.Description,
-	})
+	todo := todoService.todoRepository.Update(id, body)
 
 	if todo == nil {
 		return nil, errors.New("todo with id " + id + " is not found")

@@ -43,7 +43,7 @@ func (todoRepository *TodoRepository) Find(id string) *entity.Todo {
 	return nil
 }
 
-func (todoRepository *TodoRepository) Update(id string, newTodo *entity.Todo) *entity.Todo {
+func (todoRepository *TodoRepository) Update(id string, newTodo dto.TodoRequest) *entity.Todo {
 	todo := todoRepository.Find(id)
 
 	if todo == nil {
@@ -52,6 +52,7 @@ func (todoRepository *TodoRepository) Update(id string, newTodo *entity.Todo) *e
 
 	todo.Title = newTodo.Title
 	todo.Description = newTodo.Description
+	todo.DueDate = newTodo.DueDate
 
 	return todo
 }

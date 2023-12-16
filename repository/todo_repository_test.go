@@ -94,7 +94,7 @@ func TestUpdate(t *testing.T) {
 	}
 
 	checkTodo(t, expectedTodo, todo)
-	todoRepository.Update(todo.Id, &entity.Todo{Title: "Hello", Description: "World"})
+	todoRepository.Update(todo.Id, dto.TodoRequest{Title: "Hello", Description: "World"})
 
 	todo = todoRepository.Find(todos[1].Id)
 	expectedTodo = &entity.Todo{
