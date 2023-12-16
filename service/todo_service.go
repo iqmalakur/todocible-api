@@ -20,11 +20,7 @@ func (todoService *TodoService) Create(todo dto.TodoRequest) (*entity.Todo, erro
 		return nil, errors.New("'title' is not allowed to be empty")
 	}
 
-	if todo.Description == "" {
-		return nil, errors.New("'description' is not allowed to be empty")
-	}
-
-	newTodo := todoService.todoRepository.Create(todo.Title, todo.Description)
+	newTodo := todoService.todoRepository.Create(todo)
 	return newTodo, nil
 }
 

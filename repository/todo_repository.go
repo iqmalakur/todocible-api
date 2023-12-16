@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"todolist/dto"
 	"todolist/entity"
 
 	"github.com/google/uuid"
@@ -14,17 +15,18 @@ func NewTodoRepository() *TodoRepository {
 	return &TodoRepository{[]*entity.Todo{}}
 }
 
-func (todoRepository *TodoRepository) Create(title, description string) *entity.Todo {
-	todo := &entity.Todo{
+func (todoRepository *TodoRepository) Create(todo dto.TodoRequest) *entity.Todo {
+	newTodo := &entity.Todo{
 		Id:          uuid.New().String(),
-		Title:       title,
-		Description: description,
+		Title:       todo.Title,
+		Description: todo.Description,
+		DueDate:     todo.DueDate,
 		Completed:   false,
 	}
 
-	todoRepository.Todo = append(todoRepository.Todo, todo)
+	todoRepository.Todo = append(todoRepository.Todo, newTodo)
 
-	return todo
+	return newTodo
 }
 
 func (todoRepository *TodoRepository) FindAll() []*entity.Todo {

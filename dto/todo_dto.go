@@ -1,9 +1,12 @@
 package dto
 
+import "time"
+
 type (
 	TodoRequest struct {
-		Title       string `json:"title"`
-		Description string `json:"description"`
+		Title       string    `json:"title"`
+		Description string    `json:"description"`
+		DueDate     time.Time `json:"due_date"`
 	}
 
 	TodoResponse struct {

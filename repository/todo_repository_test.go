@@ -2,6 +2,7 @@ package repository
 
 import (
 	"testing"
+	"todolist/dto"
 	"todolist/entity"
 
 	"github.com/stretchr/testify/assert"
@@ -10,11 +11,26 @@ import (
 var todoRepository TodoRepository
 
 func TestMain(m *testing.M) {
-	todoRepository.Create("Todo 1", "Todolist 1")
-	todoRepository.Create("Todo 2", "Todolist 2")
-	todoRepository.Create("Todo 3", "Todolist 3")
-	todoRepository.Create("Todo 4", "Todolist 4")
-	todoRepository.Create("Todo 5", "Todolist 5")
+	todoRepository.Create(dto.TodoRequest{
+		Title:       "Todo 1",
+		Description: "Todolist 1",
+	})
+	todoRepository.Create(dto.TodoRequest{
+		Title:       "Todo 2",
+		Description: "Todolist 2",
+	})
+	todoRepository.Create(dto.TodoRequest{
+		Title:       "Todo 3",
+		Description: "Todolist 3",
+	})
+	todoRepository.Create(dto.TodoRequest{
+		Title:       "Todo 4",
+		Description: "Todolist 4",
+	})
+	todoRepository.Create(dto.TodoRequest{
+		Title:       "Todo 5",
+		Description: "Todolist 5",
+	})
 
 	m.Run()
 }
@@ -26,7 +42,10 @@ func checkTodo(t *testing.T, expected *entity.Todo, actual *entity.Todo) {
 }
 
 func TestCreate(t *testing.T) {
-	todo := todoRepository.Create("Coba", "Hello World")
+	todo := todoRepository.Create(dto.TodoRequest{
+		Title:       "Coba",
+		Description: "Hello World",
+	})
 
 	if todo != nil {
 		expectedTodo := &entity.Todo{
