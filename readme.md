@@ -63,12 +63,14 @@ Example Response
       "id": "e883ab98-865d-4e6d-beb4-bf022ed77f05",
       "title": "Lorem",
       "description": "Lorem Ipsum Dolor Sit Amet.",
+      "due_date": "2023-12-16T09:18:17.287Z",
       "completed": false
     },
     {
       "id": "45f49812-f8c7-4c2b-8789-8848632d4fac",
       "title": "Consectetur",
       "description": "Sed consectetur accumsan metus.",
+      "due_date": "2023-12-16T10:30:00.287Z",
       "completed": true
     }
   ]
@@ -97,6 +99,7 @@ Example Response
     "id": "45f49812-f8c7-4c2b-8789-8848632d4fac",
     "title": "Consectetur",
     "description": "Sed consectetur accumsan metus.",
+    "due_date": "2023-12-16T10:30:00.287Z",
     "completed": true
   }
 }
@@ -115,7 +118,8 @@ Example Request Body
 ```json
 {
   "title": "Lorem",
-  "description": "Lorem Ipsum Dolor Sit Amet."
+  "description": "Lorem Ipsum Dolor Sit Amet.",
+  "due_date": "2023-12-16T09:18:17.287Z"
 }
 ```
 
@@ -131,6 +135,7 @@ Example Response
     "id": "e883ab98-865d-4e6d-beb4-bf022ed77f05",
     "title": "Lorem",
     "description": "Lorem Ipsum Dolor Sit Amet.",
+    "due_date": "2023-12-16T09:18:17.287Z",
     "completed": false
   }
 }
@@ -153,7 +158,8 @@ Example Request Body
 ```json
 {
   "title": "Accumsan",
-  "description": "Sed consectetur accumsan metus."
+  "description": "Sed consectetur accumsan metus.",
+  "due_date": "2023-12-16T10:30:00.287Z"
 }
 ```
 
@@ -169,6 +175,7 @@ Example Response
     "id": "45f49812-f8c7-4c2b-8789-8848632d4fac",
     "title": "Accumsan",
     "description": "Sed consectetur accumsan metus.",
+    "due_date": "2023-12-16T10:30:00.287Z",
     "completed": true
   }
 }
@@ -196,6 +203,7 @@ Example Response
     "id": "45f49812-f8c7-4c2b-8789-8848632d4fac",
     "title": "Consectetur",
     "description": "Sed consectetur accumsan metus.",
+    "due_date": "2023-12-16T10:30:00.287Z",
     "completed": true
   }
 }
@@ -223,6 +231,7 @@ Example Response
     "id": "45f49812-f8c7-4c2b-8789-8848632d4fac",
     "title": "Consectetur",
     "description": "Sed consectetur accumsan metus.",
+    "due_date": "2023-12-16T10:30:00.287Z",
     "completed": true
   }
 }
@@ -250,6 +259,7 @@ Example Response
     "id": "45f49812-f8c7-4c2b-8789-8848632d4fac",
     "title": "Consectetur",
     "description": "Sed consectetur accumsan metus.",
+    "due_date": "2023-12-16T10:30:00.287Z",
     "completed": false
   }
 }
