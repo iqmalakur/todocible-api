@@ -4,6 +4,8 @@ This is the REST API for the ToDocible application.
 
 ToDocible is a simple application for todolist management.
 
+You can use the ToDocible REST API by accessing the url `http://api.todocible-akur.koyeb.app/todos/` or `http://localhost:8000/todos/` if you install this project locally.
+
 <details>
 <summary>Table of Contents</summary>
 
