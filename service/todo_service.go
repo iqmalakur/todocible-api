@@ -2,9 +2,9 @@ package service
 
 import (
 	"errors"
-	"todolist/dto"
-	"todolist/entity"
-	"todolist/repository"
+	"todocible_api/dto"
+	"todocible_api/entity"
+	"todocible_api/repository"
 )
 
 type TodoService struct {

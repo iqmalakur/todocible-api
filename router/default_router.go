@@ -3,7 +3,7 @@ package router
 import (
 	"encoding/json"
 	"net/http"
-	"todolist/dto"
+	"todocible_api/dto"
 )
 
 func HeaderConfig(w http.ResponseWriter) {

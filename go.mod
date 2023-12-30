@@ -1,4 +1,4 @@
-module todolist
+module todocible_api
 
 go 1.21
 

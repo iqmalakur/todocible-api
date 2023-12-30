@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
-	"todolist/dto"
-	"todolist/service"
+	"todocible_api/dto"
+	"todocible_api/service"
 )
 
 type TodoController struct {

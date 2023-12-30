@@ -2,8 +2,8 @@ package service
 
 import (
 	"testing"
-	"todolist/dto"
-	"todolist/repository"
+	"todocible_api/dto"
+	"todocible_api/repository"
 
 	"github.com/stretchr/testify/assert"
 )
