@@ -28,7 +28,11 @@ You can install this project locally by cloning this github repository using the
 
 ```bash
 git clone https://github.com/iqmalakur/todocible-api.git
+cd todocible-api
+go get
 ```
+
+Make sure you have installed golang on your computer.
 
 ## Run the app
 
@@ -42,6 +46,12 @@ If you are a Windows user, you can use the command below
 ```bash
 go build -o ToDocible.exe
 ToDocible
+```
+
+If you don't want to build the app, you can use the command below
+
+```bash
+go run main.go
 ```
 
 ## REST API
