@@ -17,13 +17,19 @@ func TestMain(m *testing.M) {
 	todoService.Close()
 }
 
-func TestCreate(t *testing.T) {
+func TestSuccessCreate(t *testing.T) {
 	_, err := todoService.Create(dto.TodoRequest{
 		Title:       "Coba",
 		Description: "Hello World",
 	})
 
 	assert.Nil(t, err)
+}
+
+func TestCreateWithoutTitle(t *testing.T) {
+	_, err := todoService.Create(dto.TodoRequest{})
+
+	assert.NotNil(t, err)
 }
 
 func TestGetAll(t *testing.T) {
