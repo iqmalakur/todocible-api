@@ -4,9 +4,13 @@ import (
 	"context"
 	"fmt"
 	"testing"
+
+	"github.com/joho/godotenv"
 )
 
 func TestConnection(t *testing.T) {
+	godotenv.Load("../.env")
+
 	db, err := GetConnection()
 	if err != nil {
 		panic(err)
