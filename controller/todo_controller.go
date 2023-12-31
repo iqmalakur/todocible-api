@@ -2,36 +2,50 @@ package controller
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strings"
+	"todocible_api/database"
 	"todocible_api/dto"
 	"todocible_api/service"
 )
 
 type TodoController struct {
-	service *service.TodoService
+	service service.TodoService
+	writer  http.ResponseWriter
+	request *http.Request
 }
 
-func NewTodoController() *TodoController {
-	return &TodoController{service.NewTodoService()}
+func NewTodoController(writer http.ResponseWriter, request *http.Request) TodoController {
+	return TodoController{
+		service: service.NewTodoService(),
+		writer:  writer,
+		request: request,
+	}
 }
 
-func (todoController *TodoController) Index(w http.ResponseWriter, r *http.Request) {
-	todos := todoController.service.GetAll()
-	json.NewEncoder(w).Encode(dto.TodoResponse{
+func (c *TodoController) Index() {
+	defer c.service.Close()
+
+	todos := c.service.GetAll()
+
+	c.writer.WriteHeader(http.StatusOK)
+	json.NewEncoder(c.writer).Encode(dto.TodoResponse{
 		Success: true,
 		Message: "success get all todos",
 		Data:    todos,
 	})
 }
 
-func (todoController *TodoController) Create(w http.ResponseWriter, r *http.Request) {
-	var body dto.TodoRequest
-	err := json.NewDecoder(r.Body).Decode(&body)
+func (c *TodoController) Create() {
+	defer c.service.Close()
 
+	var body dto.TodoRequest
+
+	err := json.NewDecoder(c.request.Body).Decode(&body)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(dto.TodoResponse{
+		c.writer.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(c.writer).Encode(dto.TodoResponse{
 			Success: false,
 			Message: "bad request",
 			Data:    nil,
@@ -39,11 +53,20 @@ func (todoController *TodoController) Create(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	todo, err := todoController.service.Create(body)
-
+	todo, err := c.service.Create(body)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(dto.TodoResponse{
+		if errors.Is(err, database.ConnectionError) {
+			c.writer.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(c.writer).Encode(dto.TodoResponse{
+				Success: false,
+				Message: err.Error(),
+				Data:    nil,
+			})
+			return
+		}
+
+		c.writer.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(c.writer).Encode(dto.TodoResponse{
 			Success: false,
 			Message: err.Error(),
 			Data:    nil,
@@ -51,22 +74,22 @@ func (todoController *TodoController) Create(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(dto.TodoResponse{
+	c.writer.WriteHeader(http.StatusCreated)
+	json.NewEncoder(c.writer).Encode(dto.TodoResponse{
 		Success: true,
 		Message: "success create new todo",
 		Data:    todo,
 	})
 }
 
-func (todoController *TodoController) Show(w http.ResponseWriter, r *http.Request) {
-	todoId := r.URL.Path[len("/todos/"):]
+func (c *TodoController) Show() {
+	todoId := c.request.URL.Path[len("/todos/"):]
 
-	todo, err := todoController.service.Get(todoId)
+	todo, err := c.service.Get(todoId)
 
 	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode(dto.TodoResponse{
+		c.writer.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(c.writer).Encode(dto.TodoResponse{
 			Success: false,
 			Message: err.Error(),
 			Data:    nil,
@@ -74,23 +97,23 @@ func (todoController *TodoController) Show(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(dto.TodoResponse{
+	c.writer.WriteHeader(http.StatusOK)
+	json.NewEncoder(c.writer).Encode(dto.TodoResponse{
 		Success: true,
 		Message: "success get todo",
 		Data:    todo,
 	})
 }
 
-func (todoController *TodoController) Update(w http.ResponseWriter, r *http.Request) {
-	todoId := r.URL.Path[len("/todos/"):]
+func (c *TodoController) Update() {
+	todoId := c.request.URL.Path[len("/todos/"):]
 
 	var body dto.TodoRequest
-	err := json.NewDecoder(r.Body).Decode(&body)
+	err := json.NewDecoder(c.request.Body).Decode(&body)
 
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(dto.TodoResponse{
+		c.writer.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(c.writer).Encode(dto.TodoResponse{
 			Success: false,
 			Message: "bad request",
 			Data:    nil,
@@ -98,16 +121,16 @@ func (todoController *TodoController) Update(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	todo, err := todoController.service.Update(todoId, body)
+	todo, err := c.service.Update(todoId, body)
 
 	if err != nil {
 		if strings.HasSuffix(err.Error(), "not found") {
-			w.WriteHeader(http.StatusNotFound)
+			c.writer.WriteHeader(http.StatusNotFound)
 		} else {
-			w.WriteHeader(http.StatusBadRequest)
+			c.writer.WriteHeader(http.StatusBadRequest)
 		}
 
-		json.NewEncoder(w).Encode(dto.TodoResponse{
+		json.NewEncoder(c.writer).Encode(dto.TodoResponse{
 			Success: false,
 			Message: err.Error(),
 			Data:    nil,
@@ -115,21 +138,21 @@ func (todoController *TodoController) Update(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(dto.TodoResponse{
+	c.writer.WriteHeader(http.StatusOK)
+	json.NewEncoder(c.writer).Encode(dto.TodoResponse{
 		Success: true,
 		Message: "success update todo",
 		Data:    todo,
 	})
 }
 
-func (todoController *TodoController) Delete(w http.ResponseWriter, r *http.Request) {
-	todoId := r.URL.Path[len("/todos/"):]
-	todo, err := todoController.service.Delete(todoId)
+func (c *TodoController) Delete() {
+	todoId := c.request.URL.Path[len("/todos/"):]
+	todo, err := c.service.Delete(todoId)
 
 	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode(dto.TodoResponse{
+		c.writer.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(c.writer).Encode(dto.TodoResponse{
 			Success: false,
 			Message: err.Error(),
 			Data:    nil,
@@ -137,16 +160,16 @@ func (todoController *TodoController) Delete(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(dto.TodoResponse{
+	c.writer.WriteHeader(http.StatusOK)
+	json.NewEncoder(c.writer).Encode(dto.TodoResponse{
 		Success: true,
 		Message: "success delete todo",
 		Data:    todo,
 	})
 }
 
-func (todoController *TodoController) SetDone(w http.ResponseWriter, r *http.Request) {
-	params := strings.Split(r.URL.Path[len("/todos/"):], "/")
+func (c *TodoController) SetDone() {
+	params := strings.Split(c.request.URL.Path[len("/todos/"):], "/")
 	todoId := params[0]
 	action := params[1]
 
@@ -156,11 +179,11 @@ func (todoController *TodoController) SetDone(w http.ResponseWriter, r *http.Req
 		status = true
 	}
 
-	todo, err := todoController.service.SetCompleted(todoId, status)
+	todo, err := c.service.SetCompleted(todoId, status)
 
 	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode(dto.TodoResponse{
+		c.writer.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(c.writer).Encode(dto.TodoResponse{
 			Success: false,
 			Message: err.Error(),
 			Data:    nil,
@@ -168,8 +191,8 @@ func (todoController *TodoController) SetDone(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(dto.TodoResponse{
+	c.writer.WriteHeader(http.StatusOK)
+	json.NewEncoder(c.writer).Encode(dto.TodoResponse{
 		Success: true,
 		Message: "success set " + action + " todo",
 		Data:    todo,

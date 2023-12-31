@@ -11,10 +11,7 @@ import (
 func TestConnection(t *testing.T) {
 	godotenv.Load("../.env")
 
-	db, err := GetConnection()
-	if err != nil {
-		panic(err)
-	}
+	db := GetConnection()
 	defer db.Close()
 
 	query := "SELECT title, description FROM todos LIMIT 10"

@@ -3,6 +3,7 @@ package repository
 import (
 	"testing"
 	"time"
+	"todocible_api/database"
 	"todocible_api/dto"
 	"todocible_api/entity"
 
@@ -15,7 +16,11 @@ var todoRepository TodoRepository
 func TestMain(m *testing.M) {
 	godotenv.Load("../.env")
 
+	todoRepository = NewTodoRepository(database.GetConnection())
+
 	m.Run()
+
+	todoRepository.Close()
 }
 
 func checkTodo(t *testing.T, expected *entity.Todo, actual *entity.Todo) {

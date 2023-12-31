@@ -9,7 +9,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func GetConnection() (*sql.DB, error) {
+func GetConnection() *sql.DB {
 	host := os.Getenv("dbhost")
 	if host == "" {
 		host = "localhost"
@@ -34,7 +34,7 @@ func GetConnection() (*sql.DB, error) {
 
 	db, err := sql.Open("postgres", conn)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
 	db.SetMaxIdleConns(10)
@@ -42,5 +42,5 @@ func GetConnection() (*sql.DB, error) {
 	db.SetConnMaxIdleTime(5 * time.Minute)
 	db.SetConnMaxLifetime(time.Hour)
 
-	return db, nil
+	return db
 }

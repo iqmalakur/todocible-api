@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"todocible_api/database"
+	"database/sql"
 	"todocible_api/dto"
 	"todocible_api/entity"
 
@@ -10,20 +10,14 @@ import (
 )
 
 type TodoRepository struct {
-	Todo []*entity.Todo
+	db *sql.DB
 }
 
-func NewTodoRepository() *TodoRepository {
-	return &TodoRepository{[]*entity.Todo{}}
+func NewTodoRepository(db *sql.DB) TodoRepository {
+	return TodoRepository{db}
 }
 
-func (repo *TodoRepository) Create(newTodo dto.TodoRequest) (*entity.Todo, error) {
-	db, err := database.GetConnection()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
+func (r *TodoRepository) Create(newTodo dto.TodoRequest) (*entity.Todo, error) {
 	todo := &entity.Todo{
 		Id:          uuid.New().String(),
 		Title:       newTodo.Title,
@@ -35,7 +29,7 @@ func (repo *TodoRepository) Create(newTodo dto.TodoRequest) (*entity.Todo, error
 	ctx := context.Background()
 	query := "INSERT INTO todos (id, title, description, due_date, completed) VALUES ($1, $2, $3, $4, $5)"
 
-	_, err = db.ExecContext(ctx, query, todo.Id, todo.Title, todo.Description, todo.DueDate, todo.Completed)
+	_, err := r.db.ExecContext(ctx, query, todo.Id, todo.Title, todo.Description, todo.DueDate, todo.Completed)
 	if err != nil {
 		return nil, err
 	}
@@ -43,22 +37,22 @@ func (repo *TodoRepository) Create(newTodo dto.TodoRequest) (*entity.Todo, error
 	return todo, nil
 }
 
-func (repo *TodoRepository) FindAll() []*entity.Todo {
-	return repo.Todo
+func (r *TodoRepository) FindAll() []*entity.Todo {
+	return []*entity.Todo{}
 }
 
-func (repo *TodoRepository) Find(id string) *entity.Todo {
-	for _, todo := range repo.Todo {
-		if todo.Id == id {
-			return todo
-		}
-	}
+func (r *TodoRepository) Find(id string) *entity.Todo {
+	// for _, todo := range r.Todo {
+	// 	if todo.Id == id {
+	// 		return todo
+	// 	}
+	// }
 
 	return nil
 }
 
-func (repo *TodoRepository) Update(id string, newTodo dto.TodoRequest) *entity.Todo {
-	todo := repo.Find(id)
+func (r *TodoRepository) Update(id string, newTodo dto.TodoRequest) *entity.Todo {
+	todo := r.Find(id)
 
 	if todo == nil {
 		return nil
@@ -71,8 +65,8 @@ func (repo *TodoRepository) Update(id string, newTodo dto.TodoRequest) *entity.T
 	return todo
 }
 
-func (repo *TodoRepository) SetCompleted(id string, completed bool) bool {
-	todo := repo.Find(id)
+func (r *TodoRepository) SetCompleted(id string, completed bool) bool {
+	todo := r.Find(id)
 
 	if todo == nil {
 		return false
@@ -83,21 +77,25 @@ func (repo *TodoRepository) SetCompleted(id string, completed bool) bool {
 	return true
 }
 
-func (repo *TodoRepository) Delete(id string) bool {
-	index := -1
+func (r *TodoRepository) Delete(id string) bool {
+	// index := -1
 
-	for i, todo := range repo.Todo {
-		if todo.Id == id {
-			index = i
-			break
-		}
-	}
+	// for i, todo := range r.Todo {
+	// 	if todo.Id == id {
+	// 		index = i
+	// 		break
+	// 	}
+	// }
 
-	if index == -1 {
-		return false
-	}
+	// if index == -1 {
+	// 	return false
+	// }
 
-	repo.Todo = append(repo.Todo[:index], repo.Todo[index+1:]...)
+	// r.Todo = append(r.Todo[:index], r.Todo[index+1:]...)
 
 	return true
+}
+
+func (r *TodoRepository) Close() {
+	defer r.db.Close()
 }
