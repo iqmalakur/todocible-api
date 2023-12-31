@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"context"
+	"todocible_api/database"
 	"todocible_api/dto"
 	"todocible_api/entity"
 
@@ -15,26 +17,38 @@ func NewTodoRepository() *TodoRepository {
 	return &TodoRepository{[]*entity.Todo{}}
 }
 
-func (todoRepository *TodoRepository) Create(todo dto.TodoRequest) *entity.Todo {
-	newTodo := &entity.Todo{
+func (repo *TodoRepository) Create(newTodo dto.TodoRequest) (*entity.Todo, error) {
+	db, err := database.GetConnection()
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
+
+	todo := &entity.Todo{
 		Id:          uuid.New().String(),
-		Title:       todo.Title,
-		Description: todo.Description,
-		DueDate:     todo.DueDate,
+		Title:       newTodo.Title,
+		Description: newTodo.Description,
+		DueDate:     newTodo.DueDate,
 		Completed:   false,
 	}
 
-	todoRepository.Todo = append(todoRepository.Todo, newTodo)
+	ctx := context.Background()
+	query := "INSERT INTO todos (id, title, description, due_date, completed) VALUES ($1, $2, $3, $4, $5)"
 
-	return newTodo
+	_, err = db.ExecContext(ctx, query, todo.Id, todo.Title, todo.Description, todo.DueDate, todo.Completed)
+	if err != nil {
+		return nil, err
+	}
+
+	return todo, nil
 }
 
-func (todoRepository *TodoRepository) FindAll() []*entity.Todo {
-	return todoRepository.Todo
+func (repo *TodoRepository) FindAll() []*entity.Todo {
+	return repo.Todo
 }
 
-func (todoRepository *TodoRepository) Find(id string) *entity.Todo {
-	for _, todo := range todoRepository.Todo {
+func (repo *TodoRepository) Find(id string) *entity.Todo {
+	for _, todo := range repo.Todo {
 		if todo.Id == id {
 			return todo
 		}
@@ -43,8 +57,8 @@ func (todoRepository *TodoRepository) Find(id string) *entity.Todo {
 	return nil
 }
 
-func (todoRepository *TodoRepository) Update(id string, newTodo dto.TodoRequest) *entity.Todo {
-	todo := todoRepository.Find(id)
+func (repo *TodoRepository) Update(id string, newTodo dto.TodoRequest) *entity.Todo {
+	todo := repo.Find(id)
 
 	if todo == nil {
 		return nil
@@ -57,8 +71,8 @@ func (todoRepository *TodoRepository) Update(id string, newTodo dto.TodoRequest)
 	return todo
 }
 
-func (todoRepository *TodoRepository) SetCompleted(id string, completed bool) bool {
-	todo := todoRepository.Find(id)
+func (repo *TodoRepository) SetCompleted(id string, completed bool) bool {
+	todo := repo.Find(id)
 
 	if todo == nil {
 		return false
@@ -69,10 +83,10 @@ func (todoRepository *TodoRepository) SetCompleted(id string, completed bool) bo
 	return true
 }
 
-func (todoRepository *TodoRepository) Delete(id string) bool {
+func (repo *TodoRepository) Delete(id string) bool {
 	index := -1
 
-	for i, todo := range todoRepository.Todo {
+	for i, todo := range repo.Todo {
 		if todo.Id == id {
 			index = i
 			break
@@ -83,7 +97,7 @@ func (todoRepository *TodoRepository) Delete(id string) bool {
 		return false
 	}
 
-	todoRepository.Todo = append(todoRepository.Todo[:index], todoRepository.Todo[index+1:]...)
+	repo.Todo = append(repo.Todo[:index], repo.Todo[index+1:]...)
 
 	return true
 }

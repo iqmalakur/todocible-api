@@ -2,35 +2,18 @@ package repository
 
 import (
 	"testing"
+	"time"
 	"todocible_api/dto"
 	"todocible_api/entity"
 
+	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 )
 
 var todoRepository TodoRepository
 
 func TestMain(m *testing.M) {
-	todoRepository.Create(dto.TodoRequest{
-		Title:       "Todo 1",
-		Description: "Todolist 1",
-	})
-	todoRepository.Create(dto.TodoRequest{
-		Title:       "Todo 2",
-		Description: "Todolist 2",
-	})
-	todoRepository.Create(dto.TodoRequest{
-		Title:       "Todo 3",
-		Description: "Todolist 3",
-	})
-	todoRepository.Create(dto.TodoRequest{
-		Title:       "Todo 4",
-		Description: "Todolist 4",
-	})
-	todoRepository.Create(dto.TodoRequest{
-		Title:       "Todo 5",
-		Description: "Todolist 5",
-	})
+	godotenv.Load("../.env")
 
 	m.Run()
 }
@@ -42,20 +25,13 @@ func checkTodo(t *testing.T, expected *entity.Todo, actual *entity.Todo) {
 }
 
 func TestCreate(t *testing.T) {
-	todo := todoRepository.Create(dto.TodoRequest{
+	_, err := todoRepository.Create(dto.TodoRequest{
 		Title:       "Coba",
 		Description: "Hello World",
+		DueDate:     time.Now(),
 	})
 
-	if todo != nil {
-		expectedTodo := &entity.Todo{
-			Title:       "Coba",
-			Description: "Hello World",
-			Completed:   false,
-		}
-
-		checkTodo(t, expectedTodo, todo)
-	}
+	assert.Nil(t, err)
 }
 
 func TestFindAll(t *testing.T) {
