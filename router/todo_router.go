@@ -7,9 +7,9 @@ import (
 	"todocible_api/controller"
 )
 
-var todoController = controller.NewTodoController()
-
 func TodoRouter(w http.ResponseWriter, r *http.Request) {
+	controller := controller.NewTodoController(w, r)
+
 	params := strings.Split(r.URL.Path[len("/todos/"):], "/")
 
 	todoId := ""
@@ -29,22 +29,22 @@ func TodoRouter(w http.ResponseWriter, r *http.Request) {
 
 	switch {
 	case todoId == "" && r.Method == "GET":
-		todoController.Index(w, r)
+		controller.Index()
 	case todoId == "" && r.Method == "POST":
-		todoController.Create(w, r)
+		controller.Create()
 	case r.Method == "GET":
-		todoController.Show(w, r)
+		controller.Show()
 	case todoId != "" && r.Method == "PUT":
 		switch action {
 		case "done":
 			fallthrough
 		case "undone":
-			todoController.SetDone(w, r)
+			controller.SetDone()
 		default:
-			todoController.Update(w, r)
+			controller.Update()
 		}
 	case todoId != "" && r.Method == "DELETE":
-		todoController.Delete(w, r)
+		controller.Delete()
 	default:
 		NotFoundHandler(w, r)
 	}

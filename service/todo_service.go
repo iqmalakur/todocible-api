@@ -2,35 +2,44 @@ package service
 
 import (
 	"errors"
+	"todocible_api/database"
 	"todocible_api/dto"
 	"todocible_api/entity"
 	"todocible_api/repository"
 )
 
 type TodoService struct {
-	todoRepository *repository.TodoRepository
+	todoRepository repository.TodoRepository
 }
 
-func NewTodoService() *TodoService {
-	return &TodoService{repository.NewTodoRepository()}
+func NewTodoService() TodoService {
+	return TodoService{repository.NewTodoRepository(database.GetConnection())}
 }
 
-func (todoService *TodoService) Create(todo dto.TodoRequest) (*entity.Todo, error) {
+func (s *TodoService) Create(todo dto.TodoRequest) (*entity.Todo, error) {
 	if todo.Title == "" {
 		return nil, errors.New("'title' is not allowed to be empty")
 	}
 
-	newTodo := todoService.todoRepository.Create(todo)
+	newTodo, err := s.todoRepository.Create(todo)
+	if err != nil {
+		return nil, database.ConnectionError
+	}
+
 	return newTodo, nil
 }
 
-func (todoService *TodoService) GetAll() []*entity.Todo {
-	todos := todoService.todoRepository.FindAll()
-	return todos
+func (s *TodoService) GetAll() ([]entity.Todo, error) {
+	todos, err := s.todoRepository.FindAll()
+	if err != nil {
+		return nil, database.ConnectionError
+	}
+
+	return todos, nil
 }
 
-func (todoService *TodoService) Get(id string) (*entity.Todo, error) {
-	todo := todoService.todoRepository.Find(id)
+func (s *TodoService) Get(id string) (*entity.Todo, error) {
+	todo := s.todoRepository.Find(id)
 
 	if todo == nil {
 		return nil, errors.New("todo with id " + id + " is not found")
@@ -39,7 +48,7 @@ func (todoService *TodoService) Get(id string) (*entity.Todo, error) {
 	return todo, nil
 }
 
-func (todoService *TodoService) Update(id string, body dto.TodoRequest) (*entity.Todo, error) {
+func (s *TodoService) Update(id string, body dto.TodoRequest) (*entity.Todo, error) {
 	if body.Title == "" {
 		return nil, errors.New("'title' is not allowed to be empty")
 	}
@@ -48,7 +57,7 @@ func (todoService *TodoService) Update(id string, body dto.TodoRequest) (*entity
 		return nil, errors.New("'description' is not allowed to be empty")
 	}
 
-	todo := todoService.todoRepository.Update(id, body)
+	todo := s.todoRepository.Update(id, body)
 
 	if todo == nil {
 		return nil, errors.New("todo with id " + id + " is not found")
@@ -57,14 +66,14 @@ func (todoService *TodoService) Update(id string, body dto.TodoRequest) (*entity
 	return todo, nil
 }
 
-func (todoService *TodoService) SetCompleted(id string, completed bool) (*entity.Todo, error) {
-	todo := todoService.todoRepository.Find(id)
+func (s *TodoService) SetCompleted(id string, completed bool) (*entity.Todo, error) {
+	todo := s.todoRepository.Find(id)
 
 	if todo == nil {
 		return nil, errors.New("todo with id " + id + " is not found")
 	}
 
-	success := todoService.todoRepository.SetCompleted(id, completed)
+	success := s.todoRepository.SetCompleted(id, completed)
 
 	if !success {
 		return nil, errors.New("todo with id " + id + " is not found")
@@ -73,18 +82,22 @@ func (todoService *TodoService) SetCompleted(id string, completed bool) (*entity
 	return todo, nil
 }
 
-func (todoService *TodoService) Delete(id string) (*entity.Todo, error) {
-	todo := todoService.todoRepository.Find(id)
+func (s *TodoService) Delete(id string) (*entity.Todo, error) {
+	todo := s.todoRepository.Find(id)
 
 	if todo == nil {
 		return nil, errors.New("todo with id " + id + " is not found")
 	}
 
-	success := todoService.todoRepository.Delete(id)
+	success := s.todoRepository.Delete(id)
 
 	if !success {
 		return nil, errors.New("todo with id " + id + " is not found")
 	}
 
 	return todo, nil
+}
+
+func (s TodoService) Close() {
+	defer s.todoRepository.Close()
 }
