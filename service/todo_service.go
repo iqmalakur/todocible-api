@@ -29,9 +29,13 @@ func (s *TodoService) Create(todo dto.TodoRequest) (*entity.Todo, error) {
 	return newTodo, nil
 }
 
-func (s *TodoService) GetAll() []*entity.Todo {
-	todos := s.todoRepository.FindAll()
-	return todos
+func (s *TodoService) GetAll() ([]entity.Todo, error) {
+	todos, err := s.todoRepository.FindAll()
+	if err != nil {
+		return nil, database.ConnectionError
+	}
+
+	return todos, nil
 }
 
 func (s *TodoService) Get(id string) (*entity.Todo, error) {

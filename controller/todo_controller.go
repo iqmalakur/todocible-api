@@ -27,7 +27,16 @@ func NewTodoController(writer http.ResponseWriter, request *http.Request) TodoCo
 func (c *TodoController) Index() {
 	defer c.service.Close()
 
-	todos := c.service.GetAll()
+	todos, err := c.service.GetAll()
+	if err != nil {
+		c.writer.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(c.writer).Encode(dto.TodoResponse{
+			Success: false,
+			Message: err.Error(),
+			Data:    nil,
+		})
+		return
+	}
 
 	c.writer.WriteHeader(http.StatusOK)
 	json.NewEncoder(c.writer).Encode(dto.TodoResponse{

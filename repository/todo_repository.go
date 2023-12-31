@@ -37,8 +37,27 @@ func (r *TodoRepository) Create(newTodo dto.TodoRequest) (*entity.Todo, error) {
 	return todo, nil
 }
 
-func (r *TodoRepository) FindAll() []*entity.Todo {
-	return []*entity.Todo{}
+func (r *TodoRepository) FindAll() ([]entity.Todo, error) {
+	ctx := context.Background()
+	query := "SELECT id, title, description, due_date, completed FROM todos LIMIT 100"
+
+	rows, err := r.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	todos := []entity.Todo{}
+
+	for rows.Next() {
+		todo := entity.Todo{}
+
+		rows.Scan(&todo.Id, &todo.Title, &todo.Description, &todo.DueDate, &todo.Completed)
+
+		todos = append(todos, todo)
+	}
+
+	return todos, nil
 }
 
 func (r *TodoRepository) Find(id string) *entity.Todo {
