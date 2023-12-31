@@ -30,7 +30,7 @@ func GetConnection() *sql.DB {
 		dbname = "todocible"
 	}
 
-	conn := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", user, pass, host, dbname)
+	conn := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=require", user, pass, host, dbname)
 
 	db, err := sql.Open("postgres", conn)
 	if err != nil {
