@@ -24,12 +24,6 @@ func TestMain(m *testing.M) {
 	todoRepository.Close()
 }
 
-// func checkTodo(t *testing.T, expected *entity.Todo, actual *entity.Todo) {
-// 	assert.Equal(t, expected.Title, actual.Title)
-// 	assert.Equal(t, expected.Description, actual.Description)
-// 	assert.Equal(t, expected.Completed, actual.Completed)
-// }
-
 func TestCreate(t *testing.T) {
 	todo, err := todoRepository.Create(dto.TodoRequest{
 		Title:       "Coba",
@@ -90,26 +84,35 @@ func TestFindWithInvalidId(t *testing.T) {
 	fmt.Println(err.Error())
 }
 
-// func TestUpdate(t *testing.T) {
-// 	todos := todoRepository.FindAll()
-// 	todo := todoRepository.Find(todos[1].Id)
-// 	expectedTodo := &entity.Todo{
-// 		Title:       "Todo 2",
-// 		Description: "Todolist 2",
-// 		Completed:   false,
-// 	}
+func TestUpdate(t *testing.T) {
+	newTodo, err := todoRepository.Create(dto.TodoRequest{
+		Title:       "Coba",
+		Description: "Hello World",
+		DueDate:     time.Now(),
+	})
 
-// 	checkTodo(t, expectedTodo, todo)
-// 	todoRepository.Update(todo.Id, dto.TodoRequest{Title: "Hello", Description: "World"})
+	assert.Nil(t, err)
+	assert.Equal(t, "Coba", newTodo.Title)
 
-// 	todo = todoRepository.Find(todos[1].Id)
-// 	expectedTodo = &entity.Todo{
-// 		Title:       "Hello",
-// 		Description: "World",
-// 		Completed:   false,
-// 	}
-// 	checkTodo(t, expectedTodo, todo)
-// }
+	err = todoRepository.Update(newTodo.Id, dto.TodoRequest{
+		Title: "YO",
+	})
+
+	assert.Nil(t, err)
+
+	todo, err := todoRepository.Find(newTodo.Id)
+
+	assert.Nil(t, err)
+	assert.Equal(t, "YO", todo.Title)
+}
+
+func TestUpdateWithInvalidId(t *testing.T) {
+	err := todoRepository.Update(uuid.New().String(), dto.TodoRequest{
+		Title: "YO",
+	})
+
+	assert.NotNil(t, err)
+}
 
 // func TestCompleted(t *testing.T) {
 // 	todos := todoRepository.FindAll()

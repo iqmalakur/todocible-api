@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"time"
 	"todocible_api/database"
 	"todocible_api/dto"
 	"todocible_api/entity"
@@ -48,19 +49,37 @@ func (s *TodoService) Get(id string) (entity.Todo, error) {
 }
 
 func (s *TodoService) Update(id string, body dto.TodoRequest) (entity.Todo, error) {
-	// if body.Title == "" {
-	// 	return nil, errors.New("'title' is not allowed to be empty")
-	// }
+	todo, err := s.todoRepository.Find(id)
+	if err != nil {
+		return entity.Todo{}, err
+	}
 
-	// if body.Description == "" {
-	// 	return nil, errors.New("'description' is not allowed to be empty")
-	// }
+	// Title validation
+	if body.Title == "" {
+		body.Title = todo.Title
+	} else {
+		todo.Title = body.Title
+	}
 
-	todo := s.todoRepository.Update(id, body)
+	// Description validation
+	if body.Description == "" {
+		body.Description = todo.Description
+	} else {
+		todo.Description = body.Description
+	}
 
-	// if todo == nil {
-	// 	return nil, errors.New("todo with id " + id + " is not found")
-	// }
+	// Due date validation
+	var emptyDate time.Time
+	if body.DueDate == emptyDate {
+		body.DueDate = todo.DueDate
+	} else {
+		todo.DueDate = body.DueDate
+	}
+
+	err = s.todoRepository.Update(id, body)
+	if err != nil {
+		return entity.Todo{}, err
+	}
 
 	return todo, nil
 }

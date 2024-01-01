@@ -124,8 +124,8 @@ func (c *TodoController) Show(id string) {
 	})
 }
 
-func (c *TodoController) Update() {
-	todoId := c.request.URL.Path[len("/todos/"):]
+func (c *TodoController) Update(id string) {
+	defer c.service.Close()
 
 	var body dto.TodoRequest
 	err := json.NewDecoder(c.request.Body).Decode(&body)
@@ -140,7 +140,7 @@ func (c *TodoController) Update() {
 		return
 	}
 
-	todo, err := c.service.Update(todoId, body)
+	todo, err := c.service.Update(id, body)
 
 	if err != nil {
 		if strings.HasSuffix(err.Error(), "not found") {

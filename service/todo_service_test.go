@@ -16,8 +16,6 @@ func TestMain(m *testing.M) {
 	todoService = NewTodoService()
 
 	m.Run()
-
-	todoService.Close()
 }
 
 func TestSuccessCreate(t *testing.T) {
@@ -85,25 +83,23 @@ func TestGetWithInvalidId(t *testing.T) {
 	fmt.Println(err.Error())
 }
 
-// func TestUpdate(t *testing.T) {
-// 	todos := todoService.GetAll()
-// 	todo, _ := todoService.Get(todos[0].Id)
-// 	assert.Equal(t, "Todo 1", todo.Title)
-// 	assert.Equal(t, "Todolist 1", todo.Description)
-// 	assert.Equal(t, false, todo.Completed)
+func TestUpdate(t *testing.T) {
+	newTodo, err := todoService.Create(dto.TodoRequest{
+		Title:       "Coba",
+		Description: "Hello World",
+		DueDate:     time.Now(),
+	})
 
-// 	todo.Title = "Hello"
-// 	todo.Description = "Hello World"
-// 	todoService.Update(todo.Id, dto.TodoRequest{
-// 		Title:       todo.Title,
-// 		Description: todo.Description,
-// 	})
+	assert.Nil(t, err)
+	assert.Equal(t, "Coba", newTodo.Title)
 
-// 	todo, _ = todoService.Get(todo.Id)
-// 	assert.Equal(t, "Hello", todo.Title)
-// 	assert.Equal(t, "Hello World", todo.Description)
-// 	assert.Equal(t, false, todo.Completed)
-// }
+	todo, err := todoService.Update(newTodo.Id, dto.TodoRequest{
+		Title: "YO",
+	})
+
+	assert.Nil(t, err)
+	assert.Equal(t, "YO", todo.Title)
+}
 
 // func TestCompleted(t *testing.T) {
 // 	todos := todoService.GetAll()

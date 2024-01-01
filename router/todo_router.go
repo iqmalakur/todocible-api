@@ -41,7 +41,7 @@ func TodoRouter(w http.ResponseWriter, r *http.Request) {
 		case "undone":
 			controller.SetDone()
 		default:
-			controller.Update()
+			controller.Update(todoId)
 		}
 	case todoId != "" && r.Method == "DELETE":
 		controller.Delete()

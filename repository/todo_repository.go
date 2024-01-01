@@ -84,18 +84,18 @@ func (r *TodoRepository) Find(id string) (entity.Todo, error) {
 	return entity.Todo{}, errors.New("todo with id " + id + " is not found")
 }
 
-func (r *TodoRepository) Update(id string, newTodo dto.TodoRequest) entity.Todo {
-	todo, _ := r.Find(id)
+func (r *TodoRepository) Update(id string, todo dto.TodoRequest) error {
+	_, err := r.Find(id)
+	if err != nil {
+		return err
+	}
 
-	// if todo == nil {
-	// 	return nil
-	// }
+	ctx := context.Background()
+	query := "UPDATE todos SET title = $1, description = $2, due_date = $3 WHERE id = $4"
 
-	todo.Title = newTodo.Title
-	todo.Description = newTodo.Description
-	todo.DueDate = newTodo.DueDate
+	_, err = r.db.ExecContext(ctx, query, todo.Title, todo.Description, todo.DueDate, id)
 
-	return todo
+	return err
 }
 
 func (r *TodoRepository) SetCompleted(id string, completed bool) bool {
