@@ -122,20 +122,23 @@ func TestCompleted(t *testing.T) {
 	})
 
 	assert.Nil(t, err)
-	assert.Equal(t, "Coba", newTodo.Title)
+	assert.False(t, newTodo.Completed)
 
 	success := todoRepository.SetCompleted(newTodo.Id, true)
 
 	assert.True(t, success)
 }
 
-// func TestDelete(t *testing.T) {
-// 	todos := todoRepository.FindAll()
-// 	todo := todoRepository.Find(todos[0].Id)
-// 	assert.NotNil(t, todo)
+func TestDelete(t *testing.T) {
+	newTodo, err := todoRepository.Create(dto.TodoRequest{
+		Title:       "Coba",
+		Description: "Hello World",
+		DueDate:     time.Now(),
+	})
 
-// 	todoRepository.Delete(todo.Id)
+	assert.Nil(t, err)
 
-// 	todo = todoRepository.Find(todo.Id)
-// 	assert.Nil(t, todo)
-// }
+	success := todoRepository.Delete(newTodo.Id)
+
+	assert.True(t, success)
+}

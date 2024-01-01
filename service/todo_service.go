@@ -100,17 +100,16 @@ func (s *TodoService) SetCompleted(id string, completed bool) (entity.Todo, erro
 }
 
 func (s *TodoService) Delete(id string) (entity.Todo, error) {
-	todo, _ := s.todoRepository.Find(id)
+	todo, err := s.todoRepository.Find(id)
+	if err != nil {
+		return entity.Todo{}, errors.New("todo with id " + id + " is not found")
+	}
 
-	// if todo == nil {
-	// 	return nil, errors.New("todo with id " + id + " is not found")
-	// }
+	success := s.todoRepository.Delete(id)
 
-	// success := s.todoRepository.Delete(id)
-
-	// if !success {
-	// 	return nil, errors.New("todo with id " + id + " is not found")
-	// }
+	if !success {
+		return entity.Todo{}, errors.New("failed to delete todo")
+	}
 
 	return todo, nil
 }

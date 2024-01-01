@@ -108,22 +108,12 @@ func (r *TodoRepository) SetCompleted(id string, completed bool) bool {
 }
 
 func (r *TodoRepository) Delete(id string) bool {
-	// index := -1
+	ctx := context.Background()
+	query := "DELETE FROM todos WHERE id = $1"
 
-	// for i, todo := range r.Todo {
-	// 	if todo.Id == id {
-	// 		index = i
-	// 		break
-	// 	}
-	// }
+	_, err := r.db.ExecContext(ctx, query, id)
 
-	// if index == -1 {
-	// 	return false
-	// }
-
-	// r.Todo = append(r.Todo[:index], r.Todo[index+1:]...)
-
-	return true
+	return err == nil
 }
 
 func (r *TodoRepository) Close() {

@@ -101,24 +101,33 @@ func TestUpdate(t *testing.T) {
 	assert.Equal(t, "YO", todo.Title)
 }
 
-// func TestCompleted(t *testing.T) {
-// 	todos := todoService.GetAll()
-// 	todo, _ := todoService.Get(todos[0].Id)
-// 	assert.Equal(t, false, todo.Completed)
+func TestCompleted(t *testing.T) {
+	newTodo, err := todoService.Create(dto.TodoRequest{
+		Title:       "Coba",
+		Description: "Hello World",
+		DueDate:     time.Now(),
+	})
 
-// 	todoService.SetCompleted(todo.Id, true)
+	assert.Nil(t, err)
+	assert.False(t, newTodo.Completed)
 
-// 	todo, _ = todoService.Get(todo.Id)
-// 	assert.Equal(t, true, todo.Completed)
-// }
+	todo, err := todoService.SetCompleted(newTodo.Id, true)
 
-// func TestDelete(t *testing.T) {
-// 	todos := todoService.GetAll()
-// 	todo, _ := todoService.Get(todos[0].Id)
-// 	assert.NotNil(t, todo)
+	assert.Nil(t, err)
+	assert.NotEqual(t, newTodo.Completed, todo.Completed)
+}
 
-// 	todoService.Delete(todo.Id)
+func TestDelete(t *testing.T) {
+	newTodo, err := todoService.Create(dto.TodoRequest{
+		Title:       "Coba",
+		Description: "Hello World",
+		DueDate:     time.Now(),
+	})
 
-// 	todo, _ = todoService.Get(todo.Id)
-// 	assert.Nil(t, todo)
-// }
+	assert.Nil(t, err)
+
+	todo, err := todoService.Delete(newTodo.Id)
+
+	assert.Nil(t, err)
+	assert.Equal(t, newTodo.Id, todo.Id)
+}

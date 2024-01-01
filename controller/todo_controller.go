@@ -165,10 +165,10 @@ func (c *TodoController) Update(id string) {
 	})
 }
 
-func (c *TodoController) Delete() {
-	todoId := c.request.URL.Path[len("/todos/"):]
-	todo, err := c.service.Delete(todoId)
+func (c *TodoController) Delete(id string) {
+	defer c.service.Close()
 
+	todo, err := c.service.Delete(id)
 	if err != nil {
 		c.writer.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(c.writer).Encode(dto.TodoResponse{
@@ -188,6 +188,8 @@ func (c *TodoController) Delete() {
 }
 
 func (c *TodoController) SetDone(id, action string) {
+	defer c.service.Close()
+
 	status := false
 	if action == "done" {
 		status = true
