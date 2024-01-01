@@ -20,8 +20,8 @@ func NewTodoRepository(db *sql.DB) TodoRepository {
 	return TodoRepository{db}
 }
 
-func (r *TodoRepository) Create(newTodo dto.TodoRequest) (*entity.Todo, error) {
-	todo := &entity.Todo{
+func (r *TodoRepository) Create(newTodo dto.TodoRequest) (entity.Todo, error) {
+	todo := entity.Todo{
 		Id:          uuid.New().String(),
 		Title:       newTodo.Title,
 		Description: newTodo.Description,
@@ -34,7 +34,7 @@ func (r *TodoRepository) Create(newTodo dto.TodoRequest) (*entity.Todo, error) {
 
 	_, err := r.db.ExecContext(ctx, query, todo.Id, todo.Title, todo.Description, todo.DueDate, todo.Completed)
 	if err != nil {
-		return nil, err
+		return entity.Todo{}, err
 	}
 
 	return todo, nil

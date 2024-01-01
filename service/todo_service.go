@@ -17,14 +17,14 @@ func NewTodoService() TodoService {
 	return TodoService{repository.NewTodoRepository(database.GetConnection())}
 }
 
-func (s *TodoService) Create(todo dto.TodoRequest) (*entity.Todo, error) {
+func (s *TodoService) Create(todo dto.TodoRequest) (entity.Todo, error) {
 	if todo.Title == "" {
-		return nil, errors.New("'title' is not allowed to be empty")
+		return entity.Todo{}, errors.New("'title' is not allowed to be empty")
 	}
 
 	newTodo, err := s.todoRepository.Create(todo)
 	if err != nil {
-		return nil, database.ConnectionError
+		return entity.Todo{}, database.ConnectionError
 	}
 
 	return newTodo, nil
