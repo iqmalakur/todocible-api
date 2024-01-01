@@ -3,8 +3,10 @@ package service
 import (
 	"fmt"
 	"testing"
+	"time"
 	"todocible_api/dto"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -14,8 +16,6 @@ func TestMain(m *testing.M) {
 	todoService = NewTodoService()
 
 	m.Run()
-
-	todoService.Close()
 }
 
 func TestSuccessCreate(t *testing.T) {
@@ -54,53 +54,80 @@ func TestGetAll(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-// func TestGet(t *testing.T) {
-// 	todos := todoService.GetAll()
-// 	todo, _ := todoService.Get(todos[0].Id)
+func TestGetWithValidId(t *testing.T) {
+	newTodo, err := todoService.Create(dto.TodoRequest{
+		Title:       "Coba",
+		Description: "Hello World",
+		DueDate:     time.Now(),
+	})
 
-// 	assert.Equal(t, "Todo 1", todo.Title)
-// 	assert.Equal(t, "Todolist 1", todo.Description)
-// 	assert.Equal(t, false, todo.Completed)
-// }
+	assert.Nil(t, err)
 
-// func TestUpdate(t *testing.T) {
-// 	todos := todoService.GetAll()
-// 	todo, _ := todoService.Get(todos[0].Id)
-// 	assert.Equal(t, "Todo 1", todo.Title)
-// 	assert.Equal(t, "Todolist 1", todo.Description)
-// 	assert.Equal(t, false, todo.Completed)
+	todo, err := todoService.Get(newTodo.Id)
 
-// 	todo.Title = "Hello"
-// 	todo.Description = "Hello World"
-// 	todoService.Update(todo.Id, dto.TodoRequest{
-// 		Title:       todo.Title,
-// 		Description: todo.Description,
-// 	})
+	assert.Nil(t, err)
 
-// 	todo, _ = todoService.Get(todo.Id)
-// 	assert.Equal(t, "Hello", todo.Title)
-// 	assert.Equal(t, "Hello World", todo.Description)
-// 	assert.Equal(t, false, todo.Completed)
-// }
+	fmt.Println("===================")
+	fmt.Println(todo.Id)
+	fmt.Println(todo.Title)
+	fmt.Println(todo.Description)
+	fmt.Println(todo.DueDate)
+	fmt.Println(todo.Completed)
+}
 
-// func TestCompleted(t *testing.T) {
-// 	todos := todoService.GetAll()
-// 	todo, _ := todoService.Get(todos[0].Id)
-// 	assert.Equal(t, false, todo.Completed)
+func TestGetWithInvalidId(t *testing.T) {
+	_, err := todoService.Get(uuid.New().String())
 
-// 	todoService.SetCompleted(todo.Id, true)
+	assert.NotNil(t, err)
 
-// 	todo, _ = todoService.Get(todo.Id)
-// 	assert.Equal(t, true, todo.Completed)
-// }
+	fmt.Println(err.Error())
+}
 
-// func TestDelete(t *testing.T) {
-// 	todos := todoService.GetAll()
-// 	todo, _ := todoService.Get(todos[0].Id)
-// 	assert.NotNil(t, todo)
+func TestUpdate(t *testing.T) {
+	newTodo, err := todoService.Create(dto.TodoRequest{
+		Title:       "Coba",
+		Description: "Hello World",
+		DueDate:     time.Now(),
+	})
 
-// 	todoService.Delete(todo.Id)
+	assert.Nil(t, err)
+	assert.Equal(t, "Coba", newTodo.Title)
 
-// 	todo, _ = todoService.Get(todo.Id)
-// 	assert.Nil(t, todo)
-// }
+	todo, err := todoService.Update(newTodo.Id, dto.TodoRequest{
+		Title: "YO",
+	})
+
+	assert.Nil(t, err)
+	assert.Equal(t, "YO", todo.Title)
+}
+
+func TestCompleted(t *testing.T) {
+	newTodo, err := todoService.Create(dto.TodoRequest{
+		Title:       "Coba",
+		Description: "Hello World",
+		DueDate:     time.Now(),
+	})
+
+	assert.Nil(t, err)
+	assert.False(t, newTodo.Completed)
+
+	todo, err := todoService.SetCompleted(newTodo.Id, true)
+
+	assert.Nil(t, err)
+	assert.NotEqual(t, newTodo.Completed, todo.Completed)
+}
+
+func TestDelete(t *testing.T) {
+	newTodo, err := todoService.Create(dto.TodoRequest{
+		Title:       "Coba",
+		Description: "Hello World",
+		DueDate:     time.Now(),
+	})
+
+	assert.Nil(t, err)
+
+	todo, err := todoService.Delete(newTodo.Id)
+
+	assert.Nil(t, err)
+	assert.Equal(t, newTodo.Id, todo.Id)
+}

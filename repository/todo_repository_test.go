@@ -7,6 +7,7 @@ import (
 	"todocible_api/database"
 	"todocible_api/dto"
 
+	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 )
@@ -22,12 +23,6 @@ func TestMain(m *testing.M) {
 
 	todoRepository.Close()
 }
-
-// func checkTodo(t *testing.T, expected *entity.Todo, actual *entity.Todo) {
-// 	assert.Equal(t, expected.Title, actual.Title)
-// 	assert.Equal(t, expected.Description, actual.Description)
-// 	assert.Equal(t, expected.Completed, actual.Completed)
-// }
 
 func TestCreate(t *testing.T) {
 	todo, err := todoRepository.Create(dto.TodoRequest{
@@ -60,68 +55,90 @@ func TestFindAll(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-// func TestFind(t *testing.T) {
-// 	todos := todoRepository.FindAll()
-// 	todo := todoRepository.Find(todos[1].Id)
+func TestFindWithValidId(t *testing.T) {
+	newTodo, err := todoRepository.Create(dto.TodoRequest{
+		Title:       "Coba",
+		Description: "Hello World",
+		DueDate:     time.Now(),
+	})
 
-// 	expectedTodo := &entity.Todo{
-// 		Title:       "Todo 2",
-// 		Description: "Todolist 2",
-// 		Completed:   false,
-// 	}
+	assert.Nil(t, err)
 
-// 	checkTodo(t, expectedTodo, todo)
-// }
+	todo, err := todoRepository.Find(newTodo.Id)
 
-// func TestUpdate(t *testing.T) {
-// 	todos := todoRepository.FindAll()
-// 	todo := todoRepository.Find(todos[1].Id)
-// 	expectedTodo := &entity.Todo{
-// 		Title:       "Todo 2",
-// 		Description: "Todolist 2",
-// 		Completed:   false,
-// 	}
+	assert.Nil(t, err)
 
-// 	checkTodo(t, expectedTodo, todo)
-// 	todoRepository.Update(todo.Id, dto.TodoRequest{Title: "Hello", Description: "World"})
+	fmt.Println("===================")
+	fmt.Println(todo.Id)
+	fmt.Println(todo.Title)
+	fmt.Println(todo.Description)
+	fmt.Println(todo.DueDate)
+	fmt.Println(todo.Completed)
+}
 
-// 	todo = todoRepository.Find(todos[1].Id)
-// 	expectedTodo = &entity.Todo{
-// 		Title:       "Hello",
-// 		Description: "World",
-// 		Completed:   false,
-// 	}
-// 	checkTodo(t, expectedTodo, todo)
-// }
+func TestFindWithInvalidId(t *testing.T) {
+	_, err := todoRepository.Find(uuid.New().String())
 
-// func TestCompleted(t *testing.T) {
-// 	todos := todoRepository.FindAll()
-// 	todo := todoRepository.Find(todos[0].Id)
-// 	expectedTodo := &entity.Todo{
-// 		Title:       "Todo 1",
-// 		Description: "Todolist 1",
-// 		Completed:   false,
-// 	}
+	assert.NotNil(t, err)
 
-// 	checkTodo(t, expectedTodo, todo)
-// 	todoRepository.SetCompleted(todo.Id, true)
+	fmt.Println(err.Error())
+}
 
-// 	todo = todoRepository.Find(todos[0].Id)
-// 	expectedTodo = &entity.Todo{
-// 		Title:       "Todo 1",
-// 		Description: "Todolist 1",
-// 		Completed:   true,
-// 	}
-// 	checkTodo(t, expectedTodo, todo)
-// }
+func TestUpdate(t *testing.T) {
+	newTodo, err := todoRepository.Create(dto.TodoRequest{
+		Title:       "Coba",
+		Description: "Hello World",
+		DueDate:     time.Now(),
+	})
 
-// func TestDelete(t *testing.T) {
-// 	todos := todoRepository.FindAll()
-// 	todo := todoRepository.Find(todos[0].Id)
-// 	assert.NotNil(t, todo)
+	assert.Nil(t, err)
+	assert.Equal(t, "Coba", newTodo.Title)
 
-// 	todoRepository.Delete(todo.Id)
+	err = todoRepository.Update(newTodo.Id, dto.TodoRequest{
+		Title: "YO",
+	})
 
-// 	todo = todoRepository.Find(todo.Id)
-// 	assert.Nil(t, todo)
-// }
+	assert.Nil(t, err)
+
+	todo, err := todoRepository.Find(newTodo.Id)
+
+	assert.Nil(t, err)
+	assert.Equal(t, "YO", todo.Title)
+}
+
+func TestUpdateWithInvalidId(t *testing.T) {
+	err := todoRepository.Update(uuid.New().String(), dto.TodoRequest{
+		Title: "YO",
+	})
+
+	assert.NotNil(t, err)
+}
+
+func TestCompleted(t *testing.T) {
+	newTodo, err := todoRepository.Create(dto.TodoRequest{
+		Title:       "Coba",
+		Description: "Hello World",
+		DueDate:     time.Now(),
+	})
+
+	assert.Nil(t, err)
+	assert.False(t, newTodo.Completed)
+
+	success := todoRepository.SetCompleted(newTodo.Id, true)
+
+	assert.True(t, success)
+}
+
+func TestDelete(t *testing.T) {
+	newTodo, err := todoRepository.Create(dto.TodoRequest{
+		Title:       "Coba",
+		Description: "Hello World",
+		DueDate:     time.Now(),
+	})
+
+	assert.Nil(t, err)
+
+	success := todoRepository.Delete(newTodo.Id)
+
+	assert.True(t, success)
+}

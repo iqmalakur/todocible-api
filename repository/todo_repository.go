@@ -3,6 +3,9 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"errors"
+	"fmt"
+	"todocible_api/database"
 	"todocible_api/dto"
 	"todocible_api/entity"
 
@@ -17,8 +20,8 @@ func NewTodoRepository(db *sql.DB) TodoRepository {
 	return TodoRepository{db}
 }
 
-func (r *TodoRepository) Create(newTodo dto.TodoRequest) (*entity.Todo, error) {
-	todo := &entity.Todo{
+func (r *TodoRepository) Create(newTodo dto.TodoRequest) (entity.Todo, error) {
+	todo := entity.Todo{
 		Id:          uuid.New().String(),
 		Title:       newTodo.Title,
 		Description: newTodo.Description,
@@ -31,7 +34,7 @@ func (r *TodoRepository) Create(newTodo dto.TodoRequest) (*entity.Todo, error) {
 
 	_, err := r.db.ExecContext(ctx, query, todo.Id, todo.Title, todo.Description, todo.DueDate, todo.Completed)
 	if err != nil {
-		return nil, err
+		return entity.Todo{}, err
 	}
 
 	return todo, nil
@@ -60,59 +63,57 @@ func (r *TodoRepository) FindAll() ([]entity.Todo, error) {
 	return todos, nil
 }
 
-func (r *TodoRepository) Find(id string) *entity.Todo {
-	// for _, todo := range r.Todo {
-	// 	if todo.Id == id {
-	// 		return todo
-	// 	}
-	// }
+func (r *TodoRepository) Find(id string) (entity.Todo, error) {
+	ctx := context.Background()
+	query := "SELECT id, title, description, due_date, completed FROM todos WHERE id = $1 LIMIT 1"
 
-	return nil
-}
+	rows, err := r.db.QueryContext(ctx, query, id)
+	if err != nil {
+		fmt.Println(err)
+		return entity.Todo{}, database.ConnectionError
+	}
+	defer rows.Close()
 
-func (r *TodoRepository) Update(id string, newTodo dto.TodoRequest) *entity.Todo {
-	todo := r.Find(id)
+	if rows.Next() {
+		todo := entity.Todo{}
 
-	if todo == nil {
-		return nil
+		rows.Scan(&todo.Id, &todo.Title, &todo.Description, &todo.DueDate, &todo.Completed)
+		return todo, nil
 	}
 
-	todo.Title = newTodo.Title
-	todo.Description = newTodo.Description
-	todo.DueDate = newTodo.DueDate
+	return entity.Todo{}, errors.New("todo with id " + id + " is not found")
+}
 
-	return todo
+func (r *TodoRepository) Update(id string, todo dto.TodoRequest) error {
+	_, err := r.Find(id)
+	if err != nil {
+		return err
+	}
+
+	ctx := context.Background()
+	query := "UPDATE todos SET title = $1, description = $2, due_date = $3 WHERE id = $4"
+
+	_, err = r.db.ExecContext(ctx, query, todo.Title, todo.Description, todo.DueDate, id)
+
+	return err
 }
 
 func (r *TodoRepository) SetCompleted(id string, completed bool) bool {
-	todo := r.Find(id)
+	ctx := context.Background()
+	query := "UPDATE todos SET completed = $1 WHERE id = $2"
 
-	if todo == nil {
-		return false
-	}
+	_, err := r.db.ExecContext(ctx, query, completed, id)
 
-	todo.Completed = completed
-
-	return true
+	return err == nil
 }
 
 func (r *TodoRepository) Delete(id string) bool {
-	// index := -1
+	ctx := context.Background()
+	query := "DELETE FROM todos WHERE id = $1"
 
-	// for i, todo := range r.Todo {
-	// 	if todo.Id == id {
-	// 		index = i
-	// 		break
-	// 	}
-	// }
+	_, err := r.db.ExecContext(ctx, query, id)
 
-	// if index == -1 {
-	// 	return false
-	// }
-
-	// r.Todo = append(r.Todo[:index], r.Todo[index+1:]...)
-
-	return true
+	return err == nil
 }
 
 func (r *TodoRepository) Close() {

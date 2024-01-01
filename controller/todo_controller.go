@@ -91,12 +91,22 @@ func (c *TodoController) Create() {
 	})
 }
 
-func (c *TodoController) Show() {
-	todoId := c.request.URL.Path[len("/todos/"):]
+func (c *TodoController) Show(id string) {
+	defer c.service.Close()
 
-	todo, err := c.service.Get(todoId)
+	todo, err := c.service.Get(id)
 
 	if err != nil {
+		if errors.Is(err, database.ConnectionError) {
+			c.writer.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(c.writer).Encode(dto.TodoResponse{
+				Success: false,
+				Message: err.Error(),
+				Data:    nil,
+			})
+			return
+		}
+
 		c.writer.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(c.writer).Encode(dto.TodoResponse{
 			Success: false,
@@ -114,8 +124,8 @@ func (c *TodoController) Show() {
 	})
 }
 
-func (c *TodoController) Update() {
-	todoId := c.request.URL.Path[len("/todos/"):]
+func (c *TodoController) Update(id string) {
+	defer c.service.Close()
 
 	var body dto.TodoRequest
 	err := json.NewDecoder(c.request.Body).Decode(&body)
@@ -130,7 +140,7 @@ func (c *TodoController) Update() {
 		return
 	}
 
-	todo, err := c.service.Update(todoId, body)
+	todo, err := c.service.Update(id, body)
 
 	if err != nil {
 		if strings.HasSuffix(err.Error(), "not found") {
@@ -155,10 +165,10 @@ func (c *TodoController) Update() {
 	})
 }
 
-func (c *TodoController) Delete() {
-	todoId := c.request.URL.Path[len("/todos/"):]
-	todo, err := c.service.Delete(todoId)
+func (c *TodoController) Delete(id string) {
+	defer c.service.Close()
 
+	todo, err := c.service.Delete(id)
 	if err != nil {
 		c.writer.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(c.writer).Encode(dto.TodoResponse{
@@ -177,19 +187,15 @@ func (c *TodoController) Delete() {
 	})
 }
 
-func (c *TodoController) SetDone() {
-	params := strings.Split(c.request.URL.Path[len("/todos/"):], "/")
-	todoId := params[0]
-	action := params[1]
+func (c *TodoController) SetDone(id, action string) {
+	defer c.service.Close()
 
 	status := false
-
 	if action == "done" {
 		status = true
 	}
 
-	todo, err := c.service.SetCompleted(todoId, status)
-
+	todo, err := c.service.SetCompleted(id, status)
 	if err != nil {
 		c.writer.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(c.writer).Encode(dto.TodoResponse{
@@ -203,7 +209,7 @@ func (c *TodoController) SetDone() {
 	c.writer.WriteHeader(http.StatusOK)
 	json.NewEncoder(c.writer).Encode(dto.TodoResponse{
 		Success: true,
-		Message: "success set " + action + " todo",
+		Message: "success update todo status",
 		Data:    todo,
 	})
 }
