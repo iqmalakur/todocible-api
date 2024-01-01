@@ -114,26 +114,20 @@ func TestUpdateWithInvalidId(t *testing.T) {
 	assert.NotNil(t, err)
 }
 
-// func TestCompleted(t *testing.T) {
-// 	todos := todoRepository.FindAll()
-// 	todo := todoRepository.Find(todos[0].Id)
-// 	expectedTodo := &entity.Todo{
-// 		Title:       "Todo 1",
-// 		Description: "Todolist 1",
-// 		Completed:   false,
-// 	}
+func TestCompleted(t *testing.T) {
+	newTodo, err := todoRepository.Create(dto.TodoRequest{
+		Title:       "Coba",
+		Description: "Hello World",
+		DueDate:     time.Now(),
+	})
 
-// 	checkTodo(t, expectedTodo, todo)
-// 	todoRepository.SetCompleted(todo.Id, true)
+	assert.Nil(t, err)
+	assert.Equal(t, "Coba", newTodo.Title)
 
-// 	todo = todoRepository.Find(todos[0].Id)
-// 	expectedTodo = &entity.Todo{
-// 		Title:       "Todo 1",
-// 		Description: "Todolist 1",
-// 		Completed:   true,
-// 	}
-// 	checkTodo(t, expectedTodo, todo)
-// }
+	success := todoRepository.SetCompleted(newTodo.Id, true)
+
+	assert.True(t, success)
+}
 
 // func TestDelete(t *testing.T) {
 // 	todos := todoRepository.FindAll()

@@ -99,15 +99,12 @@ func (r *TodoRepository) Update(id string, todo dto.TodoRequest) error {
 }
 
 func (r *TodoRepository) SetCompleted(id string, completed bool) bool {
-	todo, _ := r.Find(id)
+	ctx := context.Background()
+	query := "UPDATE todos SET completed = $1 WHERE id = $2"
 
-	// if todo == nil {
-	// 	return false
-	// }
+	_, err := r.db.ExecContext(ctx, query, completed, id)
 
-	todo.Completed = completed
-
-	return true
+	return err == nil
 }
 
 func (r *TodoRepository) Delete(id string) bool {

@@ -39,7 +39,7 @@ func TodoRouter(w http.ResponseWriter, r *http.Request) {
 		case "done":
 			fallthrough
 		case "undone":
-			controller.SetDone()
+			controller.SetDone(todoId, action)
 		default:
 			controller.Update(todoId)
 		}

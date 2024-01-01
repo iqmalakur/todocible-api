@@ -187,19 +187,13 @@ func (c *TodoController) Delete() {
 	})
 }
 
-func (c *TodoController) SetDone() {
-	params := strings.Split(c.request.URL.Path[len("/todos/"):], "/")
-	todoId := params[0]
-	action := params[1]
-
+func (c *TodoController) SetDone(id, action string) {
 	status := false
-
 	if action == "done" {
 		status = true
 	}
 
-	todo, err := c.service.SetCompleted(todoId, status)
-
+	todo, err := c.service.SetCompleted(id, status)
 	if err != nil {
 		c.writer.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(c.writer).Encode(dto.TodoResponse{
@@ -213,7 +207,7 @@ func (c *TodoController) SetDone() {
 	c.writer.WriteHeader(http.StatusOK)
 	json.NewEncoder(c.writer).Encode(dto.TodoResponse{
 		Success: true,
-		Message: "success set " + action + " todo",
+		Message: "success update todo status",
 		Data:    todo,
 	})
 }

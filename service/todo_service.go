@@ -85,17 +85,16 @@ func (s *TodoService) Update(id string, body dto.TodoRequest) (entity.Todo, erro
 }
 
 func (s *TodoService) SetCompleted(id string, completed bool) (entity.Todo, error) {
-	todo, _ := s.todoRepository.Find(id)
+	todo, err := s.todoRepository.Find(id)
+	if err != nil {
+		return entity.Todo{}, err
+	}
 
-	// if todo == nil {
-	// 	return nil, errors.New("todo with id " + id + " is not found")
-	// }
+	success := s.todoRepository.SetCompleted(id, completed)
 
-	// success := s.todoRepository.SetCompleted(id, completed)
-
-	// if !success {
-	// 	return nil, errors.New("todo with id " + id + " is not found")
-	// }
+	if !success {
+		return entity.Todo{}, errors.New("failed to update todo status")
+	}
 
 	return todo, nil
 }
