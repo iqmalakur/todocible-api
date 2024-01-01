@@ -3,6 +3,9 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"errors"
+	"fmt"
+	"todocible_api/database"
 	"todocible_api/dto"
 	"todocible_api/entity"
 
@@ -60,22 +63,33 @@ func (r *TodoRepository) FindAll() ([]entity.Todo, error) {
 	return todos, nil
 }
 
-func (r *TodoRepository) Find(id string) *entity.Todo {
-	// for _, todo := range r.Todo {
-	// 	if todo.Id == id {
-	// 		return todo
-	// 	}
-	// }
+func (r *TodoRepository) Find(id string) (entity.Todo, error) {
+	ctx := context.Background()
+	query := "SELECT id, title, description, due_date, completed FROM todos WHERE id = $1 LIMIT 1"
 
-	return nil
+	rows, err := r.db.QueryContext(ctx, query, id)
+	if err != nil {
+		fmt.Println(err)
+		return entity.Todo{}, database.ConnectionError
+	}
+	defer rows.Close()
+
+	if rows.Next() {
+		todo := entity.Todo{}
+
+		rows.Scan(&todo.Id, &todo.Title, &todo.Description, &todo.DueDate, &todo.Completed)
+		return todo, nil
+	}
+
+	return entity.Todo{}, errors.New("todo with id " + id + " is not found")
 }
 
-func (r *TodoRepository) Update(id string, newTodo dto.TodoRequest) *entity.Todo {
-	todo := r.Find(id)
+func (r *TodoRepository) Update(id string, newTodo dto.TodoRequest) entity.Todo {
+	todo, _ := r.Find(id)
 
-	if todo == nil {
-		return nil
-	}
+	// if todo == nil {
+	// 	return nil
+	// }
 
 	todo.Title = newTodo.Title
 	todo.Description = newTodo.Description
@@ -85,11 +99,11 @@ func (r *TodoRepository) Update(id string, newTodo dto.TodoRequest) *entity.Todo
 }
 
 func (r *TodoRepository) SetCompleted(id string, completed bool) bool {
-	todo := r.Find(id)
+	todo, _ := r.Find(id)
 
-	if todo == nil {
-		return false
-	}
+	// if todo == nil {
+	// 	return false
+	// }
 
 	todo.Completed = completed
 

@@ -7,6 +7,7 @@ import (
 	"todocible_api/database"
 	"todocible_api/dto"
 
+	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 )
@@ -60,18 +61,34 @@ func TestFindAll(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-// func TestFind(t *testing.T) {
-// 	todos := todoRepository.FindAll()
-// 	todo := todoRepository.Find(todos[1].Id)
+func TestFindWithValidId(t *testing.T) {
+	newTodo, err := todoRepository.Create(dto.TodoRequest{
+		Title:       "Coba",
+		Description: "Hello World",
+		DueDate:     time.Now(),
+	})
 
-// 	expectedTodo := &entity.Todo{
-// 		Title:       "Todo 2",
-// 		Description: "Todolist 2",
-// 		Completed:   false,
-// 	}
+	assert.Nil(t, err)
 
-// 	checkTodo(t, expectedTodo, todo)
-// }
+	todo, err := todoRepository.Find(newTodo.Id)
+
+	assert.Nil(t, err)
+
+	fmt.Println("===================")
+	fmt.Println(todo.Id)
+	fmt.Println(todo.Title)
+	fmt.Println(todo.Description)
+	fmt.Println(todo.DueDate)
+	fmt.Println(todo.Completed)
+}
+
+func TestFindWithInvalidId(t *testing.T) {
+	_, err := todoRepository.Find(uuid.New().String())
+
+	assert.NotNil(t, err)
+
+	fmt.Println(err.Error())
+}
 
 // func TestUpdate(t *testing.T) {
 // 	todos := todoRepository.FindAll()

@@ -3,8 +3,10 @@ package service
 import (
 	"fmt"
 	"testing"
+	"time"
 	"todocible_api/dto"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -54,14 +56,34 @@ func TestGetAll(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-// func TestGet(t *testing.T) {
-// 	todos := todoService.GetAll()
-// 	todo, _ := todoService.Get(todos[0].Id)
+func TestGetWithValidId(t *testing.T) {
+	newTodo, err := todoService.Create(dto.TodoRequest{
+		Title:       "Coba",
+		Description: "Hello World",
+		DueDate:     time.Now(),
+	})
 
-// 	assert.Equal(t, "Todo 1", todo.Title)
-// 	assert.Equal(t, "Todolist 1", todo.Description)
-// 	assert.Equal(t, false, todo.Completed)
-// }
+	assert.Nil(t, err)
+
+	todo, err := todoService.Get(newTodo.Id)
+
+	assert.Nil(t, err)
+
+	fmt.Println("===================")
+	fmt.Println(todo.Id)
+	fmt.Println(todo.Title)
+	fmt.Println(todo.Description)
+	fmt.Println(todo.DueDate)
+	fmt.Println(todo.Completed)
+}
+
+func TestGetWithInvalidId(t *testing.T) {
+	_, err := todoService.Get(uuid.New().String())
+
+	assert.NotNil(t, err)
+
+	fmt.Println(err.Error())
+}
 
 // func TestUpdate(t *testing.T) {
 // 	todos := todoService.GetAll()

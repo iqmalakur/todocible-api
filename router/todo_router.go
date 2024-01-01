@@ -32,8 +32,8 @@ func TodoRouter(w http.ResponseWriter, r *http.Request) {
 		controller.Index()
 	case todoId == "" && r.Method == "POST":
 		controller.Create()
-	case r.Method == "GET":
-		controller.Show()
+	case todoId != "" && r.Method == "GET":
+		controller.Show(todoId)
 	case todoId != "" && r.Method == "PUT":
 		switch action {
 		case "done":

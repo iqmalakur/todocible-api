@@ -91,12 +91,22 @@ func (c *TodoController) Create() {
 	})
 }
 
-func (c *TodoController) Show() {
-	todoId := c.request.URL.Path[len("/todos/"):]
+func (c *TodoController) Show(id string) {
+	defer c.service.Close()
 
-	todo, err := c.service.Get(todoId)
+	todo, err := c.service.Get(id)
 
 	if err != nil {
+		if errors.Is(err, database.ConnectionError) {
+			c.writer.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(c.writer).Encode(dto.TodoResponse{
+				Success: false,
+				Message: err.Error(),
+				Data:    nil,
+			})
+			return
+		}
+
 		c.writer.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(c.writer).Encode(dto.TodoResponse{
 			Success: false,
