@@ -28,12 +28,14 @@ func TodoRouter(w http.ResponseWriter, r *http.Request) {
 	HeaderConfig(w)
 
 	switch {
-	case todoId == "" && r.Method == "GET":
+	case todoId == "" && action == "" && r.Method == "GET":
 		controller.Index()
-	case todoId == "" && r.Method == "POST":
+	case todoId == "" && action == "" && r.Method == "POST":
 		controller.Create()
-	case todoId != "" && r.Method == "GET":
+	case todoId != "" && action == "" && r.Method == "GET":
 		controller.Show(todoId)
+	case todoId != "" && action == "" && r.Method == "DELETE":
+		controller.Delete()
 	case todoId != "" && r.Method == "PUT":
 		switch action {
 		case "done":
@@ -43,8 +45,6 @@ func TodoRouter(w http.ResponseWriter, r *http.Request) {
 		default:
 			controller.Update(todoId)
 		}
-	case todoId != "" && r.Method == "DELETE":
-		controller.Delete()
 	default:
 		NotFoundHandler(w, r)
 	}
