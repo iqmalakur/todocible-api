@@ -17,20 +17,20 @@ func NewTodoService() TodoService {
 	return TodoService{repository.NewTodoRepository(database.GetConnection())}
 }
 
-func (s *TodoService) Create(todo dto.TodoRequest) (entity.Todo, error) {
+func (s *TodoService) Create(todo dto.TodoRequest) (entity.Task, error) {
 	if todo.Title == "" {
-		return entity.Todo{}, errors.New("'title' is not allowed to be empty")
+		return entity.Task{}, errors.New("'title' is not allowed to be empty")
 	}
 
 	newTodo, err := s.todoRepository.Create(todo)
 	if err != nil {
-		return entity.Todo{}, database.ConnectionError
+		return entity.Task{}, database.ConnectionError
 	}
 
 	return newTodo, nil
 }
 
-func (s *TodoService) GetAll() ([]entity.Todo, error) {
+func (s *TodoService) GetAll() ([]entity.Task, error) {
 	todos, err := s.todoRepository.FindAll()
 	if err != nil {
 		return nil, database.ConnectionError
@@ -39,26 +39,26 @@ func (s *TodoService) GetAll() ([]entity.Todo, error) {
 	return todos, nil
 }
 
-func (s *TodoService) Get(id string) (entity.Todo, error) {
+func (s *TodoService) Get(id string) (entity.Task, error) {
 	todo, err := s.todoRepository.Find(id)
 	if err != nil {
-		return entity.Todo{}, err
+		return entity.Task{}, err
 	}
 
 	return todo, nil
 }
 
-func (s *TodoService) Update(id string, body dto.TodoRequest) (entity.Todo, error) {
+func (s *TodoService) Update(id string, body dto.TodoRequest) (entity.Task, error) {
 	todo, err := s.todoRepository.Find(id)
 	if err != nil {
-		return entity.Todo{}, err
+		return entity.Task{}, err
 	}
 
 	// Title validation
 	if body.Title == "" {
-		body.Title = todo.Title
+		body.Title = todo.Name
 	} else {
-		todo.Title = body.Title
+		todo.Name = body.Title
 	}
 
 	// Description validation
@@ -78,37 +78,37 @@ func (s *TodoService) Update(id string, body dto.TodoRequest) (entity.Todo, erro
 
 	err = s.todoRepository.Update(id, body)
 	if err != nil {
-		return entity.Todo{}, err
+		return entity.Task{}, err
 	}
 
 	return todo, nil
 }
 
-func (s *TodoService) SetCompleted(id string, completed bool) (entity.Todo, error) {
+func (s *TodoService) SetCompleted(id string, completed bool) (entity.Task, error) {
 	todo, err := s.todoRepository.Find(id)
 	if err != nil {
-		return entity.Todo{}, err
+		return entity.Task{}, err
 	}
 
 	success := s.todoRepository.SetCompleted(id, completed)
 
 	if !success {
-		return entity.Todo{}, errors.New("failed to update todo status")
+		return entity.Task{}, errors.New("failed to update todo status")
 	}
 
 	return todo, nil
 }
 
-func (s *TodoService) Delete(id string) (entity.Todo, error) {
+func (s *TodoService) Delete(id string) (entity.Task, error) {
 	todo, err := s.todoRepository.Find(id)
 	if err != nil {
-		return entity.Todo{}, errors.New("todo with id " + id + " is not found")
+		return entity.Task{}, errors.New("todo with id " + id + " is not found")
 	}
 
 	success := s.todoRepository.Delete(id)
 
 	if !success {
-		return entity.Todo{}, errors.New("failed to delete todo")
+		return entity.Task{}, errors.New("failed to delete todo")
 	}
 
 	return todo, nil

@@ -32,7 +32,7 @@ func TestCreate(t *testing.T) {
 	})
 
 	fmt.Println(todo.Id)
-	fmt.Println(todo.Title)
+	fmt.Println(todo.Name)
 	fmt.Println(todo.Description)
 	fmt.Println(todo.DueDate)
 	fmt.Println(todo.Completed)
@@ -46,7 +46,7 @@ func TestFindAll(t *testing.T) {
 	for _, todo := range todos {
 		fmt.Println("===================")
 		fmt.Println(todo.Id)
-		fmt.Println(todo.Title)
+		fmt.Println(todo.Name)
 		fmt.Println(todo.Description)
 		fmt.Println(todo.DueDate)
 		fmt.Println(todo.Completed)
@@ -70,7 +70,7 @@ func TestFindWithValidId(t *testing.T) {
 
 	fmt.Println("===================")
 	fmt.Println(todo.Id)
-	fmt.Println(todo.Title)
+	fmt.Println(todo.Name)
 	fmt.Println(todo.Description)
 	fmt.Println(todo.DueDate)
 	fmt.Println(todo.Completed)
@@ -92,7 +92,7 @@ func TestUpdate(t *testing.T) {
 	})
 
 	assert.Nil(t, err)
-	assert.Equal(t, "Coba", newTodo.Title)
+	assert.Equal(t, "Coba", newTodo.Name)
 
 	err = todoRepository.Update(newTodo.Id, dto.TodoRequest{
 		Title: "YO",
@@ -103,7 +103,7 @@ func TestUpdate(t *testing.T) {
 	todo, err := todoRepository.Find(newTodo.Id)
 
 	assert.Nil(t, err)
-	assert.Equal(t, "YO", todo.Title)
+	assert.Equal(t, "YO", todo.Name)
 }
 
 func TestUpdateWithInvalidId(t *testing.T) {

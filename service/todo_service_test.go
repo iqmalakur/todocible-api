@@ -25,7 +25,7 @@ func TestSuccessCreate(t *testing.T) {
 	})
 
 	fmt.Println(todo.Id)
-	fmt.Println(todo.Title)
+	fmt.Println(todo.Name)
 	fmt.Println(todo.Description)
 	fmt.Println(todo.DueDate)
 	fmt.Println(todo.Completed)
@@ -45,7 +45,7 @@ func TestGetAll(t *testing.T) {
 	for _, todo := range todos {
 		fmt.Println("===================")
 		fmt.Println(todo.Id)
-		fmt.Println(todo.Title)
+		fmt.Println(todo.Name)
 		fmt.Println(todo.Description)
 		fmt.Println(todo.DueDate)
 		fmt.Println(todo.Completed)
@@ -69,7 +69,7 @@ func TestGetWithValidId(t *testing.T) {
 
 	fmt.Println("===================")
 	fmt.Println(todo.Id)
-	fmt.Println(todo.Title)
+	fmt.Println(todo.Name)
 	fmt.Println(todo.Description)
 	fmt.Println(todo.DueDate)
 	fmt.Println(todo.Completed)
@@ -91,14 +91,14 @@ func TestUpdate(t *testing.T) {
 	})
 
 	assert.Nil(t, err)
-	assert.Equal(t, "Coba", newTodo.Title)
+	assert.Equal(t, "Coba", newTodo.Name)
 
 	todo, err := todoService.Update(newTodo.Id, dto.TodoRequest{
 		Title: "YO",
 	})
 
 	assert.Nil(t, err)
-	assert.Equal(t, "YO", todo.Title)
+	assert.Equal(t, "YO", todo.Name)
 }
 
 func TestCompleted(t *testing.T) {

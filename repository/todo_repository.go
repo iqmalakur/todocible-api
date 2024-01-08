@@ -20,10 +20,10 @@ func NewTodoRepository(db *sql.DB) TodoRepository {
 	return TodoRepository{db}
 }
 
-func (r *TodoRepository) Create(newTodo dto.TodoRequest) (entity.Todo, error) {
-	todo := entity.Todo{
+func (r *TodoRepository) Create(newTodo dto.TodoRequest) (entity.Task, error) {
+	todo := entity.Task{
 		Id:          uuid.New().String(),
-		Title:       newTodo.Title,
+		Name:        newTodo.Title,
 		Description: newTodo.Description,
 		DueDate:     newTodo.DueDate,
 		Completed:   false,
@@ -32,15 +32,15 @@ func (r *TodoRepository) Create(newTodo dto.TodoRequest) (entity.Todo, error) {
 	ctx := context.Background()
 	query := "INSERT INTO todos (id, title, description, due_date, completed) VALUES ($1, $2, $3, $4, $5)"
 
-	_, err := r.db.ExecContext(ctx, query, todo.Id, todo.Title, todo.Description, todo.DueDate, todo.Completed)
+	_, err := r.db.ExecContext(ctx, query, todo.Id, todo.Name, todo.Description, todo.DueDate, todo.Completed)
 	if err != nil {
-		return entity.Todo{}, err
+		return entity.Task{}, err
 	}
 
 	return todo, nil
 }
 
-func (r *TodoRepository) FindAll() ([]entity.Todo, error) {
+func (r *TodoRepository) FindAll() ([]entity.Task, error) {
 	ctx := context.Background()
 	query := "SELECT id, title, description, due_date, completed FROM todos LIMIT 100"
 
@@ -50,12 +50,12 @@ func (r *TodoRepository) FindAll() ([]entity.Todo, error) {
 	}
 	defer rows.Close()
 
-	todos := []entity.Todo{}
+	todos := []entity.Task{}
 
 	for rows.Next() {
-		todo := entity.Todo{}
+		todo := entity.Task{}
 
-		rows.Scan(&todo.Id, &todo.Title, &todo.Description, &todo.DueDate, &todo.Completed)
+		rows.Scan(&todo.Id, &todo.Name, &todo.Description, &todo.DueDate, &todo.Completed)
 
 		todos = append(todos, todo)
 	}
@@ -63,25 +63,25 @@ func (r *TodoRepository) FindAll() ([]entity.Todo, error) {
 	return todos, nil
 }
 
-func (r *TodoRepository) Find(id string) (entity.Todo, error) {
+func (r *TodoRepository) Find(id string) (entity.Task, error) {
 	ctx := context.Background()
 	query := "SELECT id, title, description, due_date, completed FROM todos WHERE id = $1 LIMIT 1"
 
 	rows, err := r.db.QueryContext(ctx, query, id)
 	if err != nil {
 		fmt.Println(err)
-		return entity.Todo{}, database.ConnectionError
+		return entity.Task{}, database.ConnectionError
 	}
 	defer rows.Close()
 
 	if rows.Next() {
-		todo := entity.Todo{}
+		todo := entity.Task{}
 
-		rows.Scan(&todo.Id, &todo.Title, &todo.Description, &todo.DueDate, &todo.Completed)
+		rows.Scan(&todo.Id, &todo.Name, &todo.Description, &todo.DueDate, &todo.Completed)
 		return todo, nil
 	}
 
-	return entity.Todo{}, errors.New("todo with id " + id + " is not found")
+	return entity.Task{}, errors.New("todo with id " + id + " is not found")
 }
 
 func (r *TodoRepository) Update(id string, todo dto.TodoRequest) error {
