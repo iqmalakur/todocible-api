@@ -1,0 +1,55 @@
+@startuml todocible
+
+entity Users {
+  email : varchar <PK>
+  --
+  password : varchar
+  name : varchar
+  picture : varchar
+}
+
+entity Groups {
+  id : int <PK>
+  user : varchar <FK>
+  --
+  name : varchar
+}
+
+entity Categories {
+  id : int <PK>
+  group : int <FK>
+  --
+  name : varchar
+}
+
+entity Tasks {
+  id : uuid <PK>
+  user : varchar <PK>
+  category : int <FK>
+  --
+  name : varchar
+  due_date : timestamp
+  completed: boolean
+}
+
+Users }o--|| Groups
+note on link
+  has
+end note
+
+Users }o--|| Tasks
+note on link
+  has
+end note
+
+Categories }o--|| Tasks
+note on link
+  has
+end note
+
+Groups }o--|| Categories
+note on link
+  has
+end note
+
+@enduml
